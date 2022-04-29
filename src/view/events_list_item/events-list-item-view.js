@@ -1,8 +1,5 @@
-import {createElement} from '../render.js';
-
-const createEventsListItemTemplate = () => (
-  '<li class="trip-events__item"></li>'
-);
+import {createElement} from '../../render.js';
+import {createEventsListItemTemplate} from './events-list-item.tpl.js';
 
 export default class EventsListItemView {
   getTemplate() {

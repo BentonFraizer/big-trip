@@ -1,4 +1,4 @@
-import FiltersFormView from './view/filters-form-view.js';
+import FiltersFormView from './view/filters_form/filters-form-view.js';
 import RoutePresenter from './presenter/route-presenter.js';
 import {render} from './render.js';
 

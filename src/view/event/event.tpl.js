@@ -1,5 +1,3 @@
-import {createElement} from '../render.js';
-
 const createEventTemplate = () => (
   `<div class="event">
     <time class="event__date" datetime="2019-03-18">MAR 18</time>
@@ -38,20 +36,4 @@ const createEventTemplate = () => (
   </div>`
 );
 
-export default class EventView {
-  getTemplate() {
-    return createEventTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
-}
+export {createEventTemplate};

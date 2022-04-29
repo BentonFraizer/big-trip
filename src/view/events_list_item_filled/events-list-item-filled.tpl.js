@@ -1,5 +1,3 @@
-import {createElement} from '../render.js';
-
 const createEventListItemFilledTemplate = () => (
   `<li class="trip-events__item">
     <div class="event">
@@ -40,20 +38,4 @@ const createEventListItemFilledTemplate = () => (
   </li>`
 );
 
-export default class EventListItemFilledView {
-  getTemplate() {
-    return createEventListItemFilledTemplate();
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
-}
+export {createEventListItemFilledTemplate};
