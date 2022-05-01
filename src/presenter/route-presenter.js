@@ -5,24 +5,24 @@ import EventsListView from '../view/events_list/events-list-view.js';
 import SortFormView from '../view/sort_form/sort-form-view.js';
 import {render} from '../render.js';
 
-const EVENTS_AMOUNT = 3;
-
 export default class RoutePresenter {
   eventsListComponent = new EventsListView();           // ul class="trip-events__list"
   eventsListItemComponent = new EventsListItemView();   // li class="trip-events__item"
 
-  init = (sortEventsContainer) => {
+  init = (sortEventsContainer, pointsModel) => {
     this.sortEventsContainer = sortEventsContainer;
+    this.pointsModel = pointsModel;
+    this.listPoints = [...this.pointsModel.getPoints()]; //количество точек событий из points-model.js. (5шт.)
 
     render(new SortFormView(), this.sortEventsContainer);
     render(this.eventsListComponent, this.sortEventsContainer);
     render(this.eventsListItemComponent, this.eventsListComponent.getElement());
     render(new EditEventFormView(), this.eventsListItemComponent.getElement());
 
-    for (let i = 0; i < EVENTS_AMOUNT; i++) {
+    for (let i = 0; i < this.listPoints.length; i++) {
       const emptyListItem = new EventsListItemView();
       render(emptyListItem, this.eventsListComponent.getElement());
-      render(new EventView(), emptyListItem.getElement());
+      render(new EventView(this.listPoints[i]), emptyListItem.getElement());
     }
   };
 }
