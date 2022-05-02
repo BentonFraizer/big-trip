@@ -2,8 +2,12 @@ import {createElement} from '../../render.js';
 import {createEventTemplate} from './event.tpl.js';
 
 export default class EventView {
+  constructor(point) {
+    this.point = point;
+  }
+
   getTemplate() {
-    return createEventTemplate();
+    return createEventTemplate(this.point);
   }
 
   getElement() {

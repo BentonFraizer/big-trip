@@ -1,18 +1,9 @@
-import {getRandomInteger, commonType} from '../utils';
-
-const MIN_BASE_PRICE = 300;
-const MAX_BASE_PRICE = 1100;
-const MIN_MONTH_VALUE = 4;
-const MIDDLE_MONTH_VALUE = 5;
-const MAX_MONTH_VALUE = 6;
-
-const getBasePrice = () => getRandomInteger(MIN_BASE_PRICE, MAX_BASE_PRICE);
-const getMonth = () => [getRandomInteger(MIN_MONTH_VALUE, MIDDLE_MONTH_VALUE), getRandomInteger(MIDDLE_MONTH_VALUE, MAX_MONTH_VALUE)];
+import {getRandomInteger, commonType, getBasePrice, getMonth} from '../utils';
 
 export const generatePoint = () => ({
   basePrice: getBasePrice(),
-  dateFrom: `2022-${getMonth()[0]}-29T15:59:39.600Z`,
-  dateTo: `2022-${getMonth()[1]}-30T07:16:28.382Z`,
+  dateFrom: `2022-${(getMonth()[0].toString()).padStart(2, '0')}-29T15:59:39.600Z`,
+  dateTo: `2022-${(getMonth()[1].toString()).padStart(2, '0')}-30T07:16:28.382Z`,
   destination: {
     'name': 'Berlin',
     'description': 'Berlin, is a beautiful city, in a middle of Europe, with an embankment of a mighty river as a centre of attraction.',
