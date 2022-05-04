@@ -1,5 +1,11 @@
-import {getRandomInteger, getCity, getRandomDescription} from '../utils';
+import {getRandomInteger} from '../utils';
+import {CITIES, LOREM_TEXT} from '../const';
 
+//Функция для получения случайного названия города из массива cities
+const getCity = () => CITIES[getRandomInteger(0, CITIES.length - 1)];
+
+//Функция получения строки случайной длины для полей description
+const getRandomDescription = () => LOREM_TEXT.substring(0, (getRandomInteger(1, 6) * 50));
 
 const getPictures = () => {
   const pictures = [];
