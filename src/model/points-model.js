@@ -1,4 +1,4 @@
-import {generatePoint} from '../mock/point';
+import {generatePoint} from '../mock/point.js';
 
 const POINTS_AMOUNT = 5;
 

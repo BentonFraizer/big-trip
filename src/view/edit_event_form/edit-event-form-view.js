@@ -2,8 +2,13 @@ import {createElement} from '../../render.js';
 import {createEditEventFormTemplate} from './edit-event-form.tpl.js';
 
 export default class EditEventFormView {
+  constructor(points, offers) {
+    this.points = points;
+    this.offers = offers;
+  }
+
   getTemplate() {
-    return createEditEventFormTemplate();
+    return createEditEventFormTemplate(this.points, this.offers);
   }
 
   getElement() {

@@ -9,15 +9,17 @@ export default class RoutePresenter {
   eventsListComponent = new EventsListView();           // ul class="trip-events__list"
   eventsListItemComponent = new EventsListItemView();   // li class="trip-events__item"
 
-  init = (sortEventsContainer, pointsModel) => {
+  init = (sortEventsContainer, pointsModel, offersModel) => {
     this.sortEventsContainer = sortEventsContainer;
     this.pointsModel = pointsModel;
     this.listPoints = [...this.pointsModel.getPoints()]; //количество точек событий из points-model.js. (5шт.)
+    this.offersModel = offersModel;
+    this.allOffers = [...this.offersModel.getOffers()];  //массив вообще всех офферов
 
     render(new SortFormView(), this.sortEventsContainer);
     render(this.eventsListComponent, this.sortEventsContainer);
     render(this.eventsListItemComponent, this.eventsListComponent.getElement());
-    render(new EditEventFormView(), this.eventsListItemComponent.getElement());
+    render(new EditEventFormView(this.listPoints, this.allOffers), this.eventsListItemComponent.getElement());
 
     for (let i = 0; i < this.listPoints.length; i++) {
       const emptyListItem = new EventsListItemView();
