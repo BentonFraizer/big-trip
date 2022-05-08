@@ -1,4 +1,4 @@
-import {createElement} from '../../render.js';
+import {createElement} from '../../utils.js';
 import {createEventsListTemplate} from './events-list.tpl.js';
 
 export default class EventsListView {

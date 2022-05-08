@@ -3,7 +3,7 @@ import EventView from '../view/event/event-view.js';
 import EventsListItemView from '../view/events_list_item/events-list-item-view.js';
 import EventsListView from '../view/events_list/events-list-view.js';
 import SortFormView from '../view/sort_form/sort-form-view.js';
-import {render} from '../render.js';
+import {render} from '../utils.js';
 
 export default class RoutePresenter {
   eventsListComponent = new EventsListView();           // ul class="trip-events__list"
