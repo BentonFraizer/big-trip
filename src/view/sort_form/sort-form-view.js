@@ -1,12 +1,9 @@
-import {createElement} from '../render.js';
+import {createElement} from '../../render.js';
+import {createSortFormTemplate} from './sort-form.tpl.js';
 
-const createEventsListTemplate = () => (
-  '<ul class="trip-events__list"></ul>'
-);
-
-export default class EventsListView {
+export default class SortFormView {
   getTemplate() {
-    return createEventsListTemplate();
+    return createSortFormTemplate();
   }
 
   getElement() {
