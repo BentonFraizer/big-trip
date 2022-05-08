@@ -1,6 +1,8 @@
 import {humanizeDateMonthDay} from '../../utils.js';
-import {MINUTES_IN_DAY, MINUTES_IN_HOUR} from '../../const.js';
 import dayjs from 'dayjs';
+
+const MINUTES_IN_DAY = 1440;
+const MINUTES_IN_HOUR = 60;
 
 const createEventTemplate = (point) => {
   const {basePrice, isFavorite, type, destination, dateFrom, dateTo} = point;

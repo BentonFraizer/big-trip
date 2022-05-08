@@ -21,10 +21,10 @@ export default class RoutePresenter {
     render(this.eventsListItemComponent, this.eventsListComponent.getElement());
     render(new EditEventFormView(this.listPoints, this.allOffers), this.eventsListItemComponent.getElement());
 
-    for (let i = 0; i < this.listPoints.length; i++) {
+    this.listPoints.forEach((element, index) => {
       const emptyListItem = new EventsListItemView();
       render(emptyListItem, this.eventsListComponent.getElement());
-      render(new EventView(this.listPoints[i]), emptyListItem.getElement());
-    }
+      render(new EventView(this.listPoints[index]), emptyListItem.getElement());
+    });
   };
 }

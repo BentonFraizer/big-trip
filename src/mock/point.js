@@ -1,7 +1,13 @@
 import dayjs from 'dayjs';
 import {getRandomInteger} from '../utils';
 import {generateDestination} from './destination.js';
-import {TYPES, MIN_BASE_PRICE, MAX_BASE_PRICE, MAX_DAYS_BEFORE, MAX_DAYS_AFTER} from '../const';
+import {TYPES} from '../consts.js';
+
+const MIN_BASE_PRICE = 300;
+const MAX_BASE_PRICE = 1100;
+const MAX_DAYS_BEFORE = 7;
+const MAX_DAYS_AFTER = 7;
+
 
 const generateDateFrom = () => {
   const daysGap = getRandomInteger(-MAX_DAYS_BEFORE, 0);
