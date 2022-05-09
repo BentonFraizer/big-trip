@@ -2,6 +2,8 @@ import {createElement} from '../../utils.js';
 import {createEditEventFormTemplate} from './edit-event-form.tpl.js';
 
 export default class EditEventFormView {
+  editable = true;
+
   constructor(points, offers) {
     this.points = points;
     this.offers = offers;

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {TYPES} from '../../consts.js';
+const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const createEditEventFormTemplate = (allPoints, allOffers) => {
   const {basePrice, type, destination, dateFrom, dateTo, offers} = allPoints[0];
 
