@@ -6,20 +6,24 @@ import {generatePoint} from './mock/point.js';
 
 const POINTS_AMOUNT = 5;
 const filtersContainerElement = document.querySelector('.trip-controls__filters');
-const tripEventsSectionElement = document.querySelector('.trip-events');
+const pageBodyContainerElement = document.querySelector('main .page-body__container');
 
 
 //Следующие объявления двух классов, используются как model (вынесены из файлов poins-model и offers-model).
 class OffersModel {
-  offers = getOffers();
+  #offers = getOffers();
 
-  getOffers = () => this.offers;
+  get offers() {
+    return this.#offers;
+  }
 }
 
 class PointsModel {
-  points = Array.from({length: POINTS_AMOUNT}, generatePoint);
+  #points = Array.from({length: POINTS_AMOUNT}, generatePoint);
 
-  getPoints = () => this.points;
+  get points() {
+    return this.#points;
+  }
 }
 
 const pointsModel = new PointsModel();
@@ -28,4 +32,4 @@ const routePresenter = new RoutePresenter();
 
 render(new FiltersFormView(), filtersContainerElement);
 
-routePresenter.init(tripEventsSectionElement, pointsModel, offersModel);
+routePresenter.init(pageBodyContainerElement, pointsModel, offersModel);
