@@ -4,7 +4,7 @@ import {render} from './utils.js';
 import {getOffers} from './mock/offers.js';
 import {generatePoint} from './mock/point.js';
 
-const POINTS_AMOUNT = 5;
+const POINTS_AMOUNT = 3;
 const filtersContainerElement = document.querySelector('.trip-controls__filters');
 const pageBodyContainerElement = document.querySelector('main .page-body__container');
 

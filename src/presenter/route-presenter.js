@@ -1,6 +1,5 @@
 import EditEventFormView from '../view/edit_event_form/edit-event-form-view.js';
 import EventView from '../view/event/event-view.js';
-import EventsListItemView from '../view/events_list_item/events-list-item-view.js';
 import EventsListView from '../view/events_list/events-list-view.js';
 import SortFormView from '../view/sort_form/sort-form-view.js';
 import {render} from '../utils.js';
@@ -13,7 +12,6 @@ export default class RoutePresenter {
 
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
   #eventsListComponent = new EventsListView();                // ul      class="trip-events__list"
-  #eventsListItemComponent = new EventsListItemView();        // li      class="trip-events__item"
 
   #listPoints = [];
   #allOffers = [];
@@ -28,13 +26,53 @@ export default class RoutePresenter {
     render(this.#sortAndEventsContainer, this.#pageBodyContainer);
     render(new SortFormView(), this.#sortAndEventsContainer.element);
     render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
-    render(this.#eventsListItemComponent, this.#eventsListComponent.element);
-    render(new EditEventFormView(this.#listPoints, this.#allOffers), this.#eventsListItemComponent.element);
 
     this.#listPoints.forEach((element, index) => {
-      const emptyListItem = new EventsListItemView();
-      render(emptyListItem, this.#eventsListComponent.element);
-      render(new EventView(this.#listPoints[index]), emptyListItem.element);
+      this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
     });
   }
+
+  #renderPoint = (point, points, offers) => {
+    const pointComponent = new EventView(point);
+    const editPointFormComponent = new EditEventFormView(points, offers);
+
+    const replacePointToForm = () => {
+      this.#eventsListComponent.element.replaceChild(editPointFormComponent.element, pointComponent.element);
+    };
+
+    const replaceFormToPoint = () => {
+      this.#eventsListComponent.element.replaceChild(pointComponent.element, editPointFormComponent.element);
+    };
+
+    //Функция обработки нажатия клавиши "Esc" в момент когда открыта формы редактирования, для её замены на точку маршрута
+    const onEscKeyDown = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        replaceFormToPoint();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
+    //Замена точки маршрута на форму по клику на кнопку в виде галочки
+    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replacePointToForm();
+      document.addEventListener('keydown', onEscKeyDown);
+    });
+
+    //Замена формы на точку маршрута по клику на кнопку с изображением галочки
+    editPointFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', (evt) => {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+    //Замена формы на точку маршрута по клику на кнопку "Save"
+    editPointFormComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+    render(pointComponent, this.#eventsListComponent.element);
+  };
 }
