@@ -4,6 +4,7 @@ import EventsListView from '../view/events_list/events-list-view.js';
 import SortFormView from '../view/sort_form/sort-form-view.js';
 import {render} from '../utils.js';
 import SortAndEventsContainerView from '../view/sort_and_events_container/sort-and-events-container-view.js';
+import EventsListEmptyView from '../view/events_list_empty/events-list-empty-view.js';
 
 export default class RoutePresenter {
   #pageBodyContainer = null;
@@ -27,9 +28,13 @@ export default class RoutePresenter {
     render(new SortFormView(), this.#sortAndEventsContainer.element);
     render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
 
-    this.#listPoints.forEach((element, index) => {
-      this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
-    });
+    if (this.#eventsListComponent.element.childElementCount === 0) {
+      render(new EventsListEmptyView(), this.#sortAndEventsContainer.element);
+    } else {
+      this.#listPoints.forEach((element, index) => {
+        this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
+      });
+    }
   }
 
   #renderPoint = (point, points, offers) => {
