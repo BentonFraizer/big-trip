@@ -1,11 +1,11 @@
 import {createElement} from '../../utils.js';
-import {createEventsListTemplate} from './events-list.tpl.js';
+import {createSortAndEventsContainerTemplate} from './sort-and-events-container.tpl.js';
 
-export default class EventsListView {
+export default class SortAndEventsContainerView {
   #element = null;
 
   get template() {
-    return createEventsListTemplate();
+    return createSortAndEventsContainerTemplate();
   }
 
   get element() {
@@ -20,3 +20,5 @@ export default class EventsListView {
     this.#element = null;
   }
 }
+
+

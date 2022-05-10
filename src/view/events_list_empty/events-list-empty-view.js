@@ -1,11 +1,11 @@
 import {createElement} from '../../utils.js';
-import {createEventsListTemplate} from './events-list.tpl.js';
+import {createEventsListEmptyTemplate} from './events-list-empty.tpl.js';
 
-export default class EventsListView {
+export default class EventsListEmptyView {
   #element = null;
 
   get template() {
-    return createEventsListTemplate();
+    return createEventsListEmptyTemplate();
   }
 
   get element() {
