@@ -20,7 +20,7 @@ export default class RoutePresenter {
   init (pageBodyContainer, pointsModel, offersModel) {
     this.#pageBodyContainer = pageBodyContainer;
     this.#pointsModel = pointsModel;
-    this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js. (5шт.)
+    this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js.
     this.#offersModel = offersModel;
     this.#allOffers = [...this.#offersModel.offers];  //массив вообще всех офферов
 
@@ -28,13 +28,14 @@ export default class RoutePresenter {
     render(new SortFormView(), this.#sortAndEventsContainer.element);
     render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
 
+    if (!this.#listPoints.length) {
+      render(new EventsListEmptyView(), this.#sortAndEventsContainer.element);
+      return;
+    }
+
     this.#listPoints.forEach((element, index) => {
       this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
     });
-
-    if (this.#eventsListComponent.element.childElementCount === 0) {
-      render(new EventsListEmptyView(), this.#sortAndEventsContainer.element);
-    }
   }
 
   #renderPoint (point, points, offers) {
@@ -51,7 +52,7 @@ export default class RoutePresenter {
 
     //Функция обработки нажатия клавиши "Esc" в момент когда открыта формы редактирования, для её замены на точку маршрута
     const onEscKeyDown = (evt) => {
-      if (isEscKeyPressed) {
+      if (isEscKeyPressed(evt)) {
         evt.preventDefault();
         replaceFormToPoint();
         document.removeEventListener('keydown', onEscKeyDown);
