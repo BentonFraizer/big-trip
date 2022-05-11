@@ -46,4 +46,7 @@ const render = (component, container, place = RenderPosition.BEFOREEND) => {
   }
 };
 
-export {getRandomInteger, humanizeDateMonthDay, RenderPosition, createElement, render};
+//Функция определения нажатия клавиши Escape
+const isEscKeyPressed = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+export {getRandomInteger, humanizeDateMonthDay, RenderPosition, createElement, render, isEscKeyPressed};
