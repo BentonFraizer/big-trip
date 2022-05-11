@@ -1,10 +1,10 @@
-import EditEventFormView from '../view/edit_event_form/edit-event-form-view.js';
-import EventView from '../view/event/event-view.js';
-import EventsListView from '../view/events_list/events-list-view.js';
-import SortFormView from '../view/sort_form/sort-form-view.js';
-import {render} from '../utils.js';
-import SortAndEventsContainerView from '../view/sort_and_events_container/sort-and-events-container-view.js';
-import EventsListEmptyView from '../view/events_list_empty/events-list-empty-view.js';
+import EditEventFormView from '../views/edit_event_form/edit-event-form-view.js';
+import EventView from '../views/event/event-view.js';
+import EventsListView from '../views/events_list/events-list-view.js';
+import SortFormView from '../views/sort_form/sort-form-view.js';
+import {render, isEscKeyPressed} from '../utils.js';
+import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view.js';
+import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view.js';
 
 export default class RoutePresenter {
   #pageBodyContainer = null;
@@ -28,16 +28,16 @@ export default class RoutePresenter {
     render(new SortFormView(), this.#sortAndEventsContainer.element);
     render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
 
+    this.#listPoints.forEach((element, index) => {
+      this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
+    });
+
     if (this.#eventsListComponent.element.childElementCount === 0) {
       render(new EventsListEmptyView(), this.#sortAndEventsContainer.element);
-    } else {
-      this.#listPoints.forEach((element, index) => {
-        this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
-      });
     }
   }
 
-  #renderPoint = (point, points, offers) => {
+  #renderPoint (point, points, offers) {
     const pointComponent = new EventView(point);
     const editPointFormComponent = new EditEventFormView(points, offers);
 
@@ -51,7 +51,7 @@ export default class RoutePresenter {
 
     //Функция обработки нажатия клавиши "Esc" в момент когда открыта формы редактирования, для её замены на точку маршрута
     const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
+      if (isEscKeyPressed) {
         evt.preventDefault();
         replaceFormToPoint();
         document.removeEventListener('keydown', onEscKeyDown);
@@ -79,5 +79,5 @@ export default class RoutePresenter {
     });
 
     render(pointComponent, this.#eventsListComponent.element);
-  };
+  }
 }

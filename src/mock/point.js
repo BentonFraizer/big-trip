@@ -1,4 +1,4 @@
-export const generatePoint = () => ({
+export const getPoint = () => ({
   'id': '0',
   'type': 'ship',
   'dateFrom': '2022-05-07T02:25:22.724Z',
