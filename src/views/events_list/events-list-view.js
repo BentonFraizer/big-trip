@@ -1,22 +1,8 @@
-import {createElement} from '../../utils.js';
+import AbstractView from '../../framework/view/abstract-view.js';
 import {createEventsListTemplate} from './events-list.tpl.js';
 
-export default class EventsListView {
-  #element = null;
-
+export default class EventsListView extends AbstractView {
   get template() {
     return createEventsListTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
