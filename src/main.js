@@ -1,6 +1,6 @@
 import FiltersFormView from './views/filters_form/filters-form-view.js';
 import RoutePresenter from './presenters/route-presenter.js';
-import {render} from './utils.js';
+import {render} from './framework/render.js';
 import PointsModel from './models/points-model.js';
 import OffersModel from './models/offers-model.js';
 import {getOffers} from './mock/offers.js';
