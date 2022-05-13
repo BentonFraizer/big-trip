@@ -13,8 +13,8 @@ const pageBodyContainerElement = document.querySelector('main .page-body__contai
 
 const pointsModel = new PointsModel(POINTS_AMOUNT, getPoint);
 const offersModel = new OffersModel(getOffers());
-const routePresenter = new RoutePresenter();
+const routePresenter = new RoutePresenter(pageBodyContainerElement, pointsModel, offersModel);
 
 render(new FiltersFormView(), filtersContainerElement);
 
-routePresenter.init(pageBodyContainerElement, pointsModel, offersModel);
+routePresenter.init();

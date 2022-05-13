@@ -18,25 +18,17 @@ export default class RoutePresenter {
   #listPoints = [];
   #allOffers = [];
 
-  init (pageBodyContainer, pointsModel, offersModel) {
+  constructor(pageBodyContainer, pointsModel, offersModel) {
     this.#pageBodyContainer = pageBodyContainer;
     this.#pointsModel = pointsModel;
-    this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js.
     this.#offersModel = offersModel;
+  }
+
+  init () {
+    this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js.
     this.#allOffers = [...this.#offersModel.offers];  //массив вообще всех офферов
 
-    render(this.#sortAndEventsContainer, this.#pageBodyContainer);
-    render(new SortFormView(), this.#sortAndEventsContainer.element);
-    render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
-
-    if (!this.#listPoints.length) {
-      render(new EventsListEmptyView(), this.#sortAndEventsContainer.element);
-      return;
-    }
-
-    this.#listPoints.forEach((element, index) => {
-      this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
-    });
+    this.#renderSortAndEventsContainer();
   }
 
   #renderPoint (point, points, offers) {
@@ -81,5 +73,20 @@ export default class RoutePresenter {
     });
 
     render(pointComponent, this.#eventsListComponent.element);
+  }
+
+  #renderSortAndEventsContainer () {
+    render(this.#sortAndEventsContainer, this.#pageBodyContainer);
+    render(new SortFormView(), this.#sortAndEventsContainer.element);
+    render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
+
+    if (!this.#listPoints.length) {
+      render(new EventsListEmptyView(), this.#sortAndEventsContainer.element);
+      return;
+    }
+
+    this.#listPoints.forEach((element, index) => {
+      this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
+    });
   }
 }
