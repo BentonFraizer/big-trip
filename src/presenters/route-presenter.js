@@ -5,7 +5,7 @@ import SortFormView from '../views/sort_form/sort-form-view.js';
 import {isEscKeyPressed} from '../utils.js';
 import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view.js';
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view.js';
-import {render} from '../framework/render.js';
+import {render, replace} from '../framework/render.js';
 
 export default class RoutePresenter {
   #pageBodyContainer = null;
@@ -36,11 +36,11 @@ export default class RoutePresenter {
     const editPointFormComponent = new EditEventFormView(points, offers);
 
     const replacePointToForm = () => {
-      this.#eventsListComponent.element.replaceChild(editPointFormComponent.element, pointComponent.element);
+      replace(editPointFormComponent, pointComponent);
     };
 
     const replaceFormToPoint = () => {
-      this.#eventsListComponent.element.replaceChild(pointComponent.element, editPointFormComponent.element);
+      replace(pointComponent, editPointFormComponent);
     };
 
     //Функция обработки нажатия клавиши "Esc" в момент когда открыта формы редактирования, для её замены на точку маршрута
