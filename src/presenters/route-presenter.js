@@ -53,21 +53,19 @@ export default class RoutePresenter {
     };
 
     //Замена точки маршрута на форму по клику на кнопку в виде галочки
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointComponent.setOpenEditFormClickHandler(() => {
       replacePointToForm();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
     //Замена формы на точку маршрута по клику на кнопку с изображением галочки
-    editPointFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', (evt) => {
-      evt.preventDefault();
+    editPointFormComponent.setCloseEditFormClickHandler(() => {
       replaceFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     });
 
     //Замена формы на точку маршрута по клику на кнопку "Save"
-    editPointFormComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    editPointFormComponent.setFormSubmitHandler(() => {
       replaceFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     });

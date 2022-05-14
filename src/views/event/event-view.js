@@ -12,4 +12,14 @@ export default class EventView extends AbstractView{
   get template() {
     return createEventTemplate(this.#point);
   }
+
+  setOpenEditFormClickHandler(callback) {
+    this._callback.openEditFormClick = callback;
+    this.element.querySelector('.event .event__rollup-btn').addEventListener('click', this.#openEditFormClickHandler);
+  }
+
+  #openEditFormClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.openEditFormClick();
+  };
 }

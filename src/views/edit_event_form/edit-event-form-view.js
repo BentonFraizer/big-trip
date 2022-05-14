@@ -4,8 +4,8 @@ import {createEditEventFormTemplate} from './edit-event-form.tpl.js';
 const EMPTY_POINT = {
   'id': null,
   'type': '',
-  'dateFrom': null,
-  'dateTo': null,
+  'dateFrom': '',
+  'dateTo': '',
   'destination': {
     'name': '',
     'description': '',
@@ -30,4 +30,24 @@ export default class EditEventFormView extends AbstractView {
   get template() {
     return createEditEventFormTemplate(this.#points, this.#offers);
   }
+
+  setFormSubmitHandler (callback){
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
+
+  setCloseEditFormClickHandler (callback){
+    this._callback.closeEditFormClick = callback;
+    this.element.querySelector('form .event__rollup-btn').addEventListener('click', this.#closeEditFormClickHandler);
+  }
+
+  #closeEditFormClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeEditFormClick();
+  };
 }
