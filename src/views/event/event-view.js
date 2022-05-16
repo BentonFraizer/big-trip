@@ -1,11 +1,11 @@
-import {createElement} from '../../utils.js';
+import AbstractView from '../../framework/view/abstract-view.js';
 import {createEventTemplate} from './event.tpl.js';
 
-export default class EventView {
-  #element = null;
+export default class EventView extends AbstractView{
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
   }
 
@@ -13,15 +13,13 @@ export default class EventView {
     return createEventTemplate(this.#point);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
+  setOpenEditFormClickHandler(callback) {
+    this._callback.openEditFormClick = callback;
+    this.element.querySelector('.event .event__rollup-btn').addEventListener('click', this.#openEditFormClickHandler);
   }
 
-  removeElement() {
-    this.#element = null;
-  }
+  #openEditFormClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.openEditFormClick();
+  };
 }

@@ -2,9 +2,10 @@ import EditEventFormView from '../views/edit_event_form/edit-event-form-view.js'
 import EventView from '../views/event/event-view.js';
 import EventsListView from '../views/events_list/events-list-view.js';
 import SortFormView from '../views/sort_form/sort-form-view.js';
-import {render, isEscKeyPressed} from '../utils.js';
+import {isEscKeyPressed} from '../utils.js';
 import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view.js';
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view.js';
+import {render, replace} from '../framework/render.js';
 
 export default class RoutePresenter {
   #pageBodyContainer = null;
@@ -17,24 +18,17 @@ export default class RoutePresenter {
   #listPoints = [];
   #allOffers = [];
 
-  init (pageBodyContainer, pointsModel, offersModel) {
+  constructor(pageBodyContainer, pointsModel, offersModel) {
     this.#pageBodyContainer = pageBodyContainer;
     this.#pointsModel = pointsModel;
-    this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js. (5шт.)
     this.#offersModel = offersModel;
+  }
+
+  init () {
+    this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js.
     this.#allOffers = [...this.#offersModel.offers];  //массив вообще всех офферов
 
-    render(this.#sortAndEventsContainer, this.#pageBodyContainer);
-    render(new SortFormView(), this.#sortAndEventsContainer.element);
-    render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
-
-    this.#listPoints.forEach((element, index) => {
-      this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
-    });
-
-    if (this.#eventsListComponent.element.childElementCount === 0) {
-      render(new EventsListEmptyView(), this.#sortAndEventsContainer.element);
-    }
+    this.#renderSortAndEventsContainer();
   }
 
   #renderPoint (point, points, offers) {
@@ -42,16 +36,16 @@ export default class RoutePresenter {
     const editPointFormComponent = new EditEventFormView(points, offers);
 
     const replacePointToForm = () => {
-      this.#eventsListComponent.element.replaceChild(editPointFormComponent.element, pointComponent.element);
+      replace(editPointFormComponent, pointComponent);
     };
 
     const replaceFormToPoint = () => {
-      this.#eventsListComponent.element.replaceChild(pointComponent.element, editPointFormComponent.element);
+      replace(pointComponent, editPointFormComponent);
     };
 
     //Функция обработки нажатия клавиши "Esc" в момент когда открыта формы редактирования, для её замены на точку маршрута
     const onEscKeyDown = (evt) => {
-      if (isEscKeyPressed) {
+      if (isEscKeyPressed(evt)) {
         evt.preventDefault();
         replaceFormToPoint();
         document.removeEventListener('keydown', onEscKeyDown);
@@ -59,25 +53,38 @@ export default class RoutePresenter {
     };
 
     //Замена точки маршрута на форму по клику на кнопку в виде галочки
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointComponent.setOpenEditFormClickHandler(() => {
       replacePointToForm();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
     //Замена формы на точку маршрута по клику на кнопку с изображением галочки
-    editPointFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', (evt) => {
-      evt.preventDefault();
+    editPointFormComponent.setCloseEditFormClickHandler(() => {
       replaceFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     });
 
     //Замена формы на точку маршрута по клику на кнопку "Save"
-    editPointFormComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    editPointFormComponent.setFormSubmitHandler(() => {
       replaceFormToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     });
 
     render(pointComponent, this.#eventsListComponent.element);
+  }
+
+  #renderSortAndEventsContainer () {
+    render(this.#sortAndEventsContainer, this.#pageBodyContainer);
+    render(new SortFormView(), this.#sortAndEventsContainer.element);
+    render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
+
+    if (!this.#listPoints.length) {
+      render(new EventsListEmptyView(), this.#sortAndEventsContainer.element);
+      return;
+    }
+
+    this.#listPoints.forEach((element, index) => {
+      this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
+    });
   }
 }

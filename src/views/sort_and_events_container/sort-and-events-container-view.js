@@ -1,23 +1,9 @@
-import {createElement} from '../../utils.js';
+import AbstractView from '../../framework/view/abstract-view.js';
 import {createSortAndEventsContainerTemplate} from './sort-and-events-container.tpl.js';
 
-export default class SortAndEventsContainerView {
-  #element = null;
-
+export default class SortAndEventsContainerView extends AbstractView {
   get template() {
     return createSortAndEventsContainerTemplate();
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 
