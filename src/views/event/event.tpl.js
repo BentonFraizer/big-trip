@@ -65,12 +65,15 @@ const createEventTemplate = (point) => {
 
   //Функция, составляющая необходимый формат даты для элемента с классом 'event__duration'
   const buildDateFormat = (daysDiff, hoursDiff, minutesDiff) => {
+    if (timeDaysDifference === undefined && restHoursAmount === undefined && restMinutesAmount === undefined) {
+      return '';
+    }
     if (daysDiff === 0 && hoursDiff === 0) {
       return `${(restMinutesAmount.toString()).padStart(2, '0')}M`;
     }
     if (daysDiff === 0) {
       return `${(hoursDiff.toString()).padStart(2, '0')}H ${(minutesDiff.toString()).padStart(2, '0')}M`;
-    } else {
+    } else if (timeDaysDifference !== undefined && restHoursAmount !== undefined && restMinutesAmount !== undefined) {
       return `${(timeDaysDifference.toString()).padStart(2, '0')}D ${(restHoursAmount.toString()).padStart(2, '0')}H ${(restMinutesAmount.toString()).padStart(2, '0')}M`;
     }
   };
@@ -80,6 +83,10 @@ const createEventTemplate = (point) => {
     ? 'event__favorite-btn event__favorite-btn--active'
     : 'event__favorite-btn';
 
+  const destinationName = destination === undefined
+    ? ''
+    : destination.name;
+
   return (
     `<li class="trip-events__item">
       <div class="event">
@@ -87,7 +94,7 @@ const createEventTemplate = (point) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${destination.name}</h3>
+        <h3 class="event__title">${type} ${destinationName}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${dayjs(dateFrom).format('YYYY-MM-DDTHH:mm')}">${dayjs(dateFrom).format('HH:mm')}</time>
