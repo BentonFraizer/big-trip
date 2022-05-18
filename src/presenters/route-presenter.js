@@ -1,11 +1,11 @@
-import EditEventFormView from '../views/edit_event_form/edit-event-form-view.js';
-import EventView from '../views/event/event-view.js';
-import EventsListView from '../views/events_list/events-list-view.js';
-import SortFormView from '../views/sort_form/sort-form-view.js';
-import {isEscKeyPressed} from '../utils.js';
-import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view.js';
-import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view.js';
-import {render, replace} from '../framework/render.js';
+import EditEventFormView from '../views/edit_event_form/edit-event-form-view';
+import EventView from '../views/event/event-view';
+import EventsListView from '../views/events_list/events-list-view';
+import SortFormView from '../views/sort_form/sort-form-view';
+import {isEscKeyPressed} from '../utils';
+import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view';
+import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
+import {render, replace} from '../framework/render';
 
 export default class RoutePresenter {
   #pageBodyContainer = null;

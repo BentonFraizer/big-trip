@@ -1,4 +1,4 @@
-import {humanizeDateMonthDay} from '../../utils.js';
+import {humanizeDateMonthDay} from '../../utils';
 import dayjs from 'dayjs';
 
 const MINUTES_IN_DAY = 1440;

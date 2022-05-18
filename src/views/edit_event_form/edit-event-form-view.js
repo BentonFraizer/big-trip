@@ -1,5 +1,5 @@
-import AbstractView from '../../framework/view/abstract-view.js';
-import {createEditEventFormTemplate} from './edit-event-form.tpl.js';
+import AbstractView from '../../framework/view/abstract-view';
+import {createEditEventFormTemplate} from './edit-event-form.tpl';
 
 const EMPTY_POINT = {
   'id': null,

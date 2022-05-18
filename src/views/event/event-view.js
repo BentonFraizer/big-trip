@@ -1,5 +1,5 @@
-import AbstractView from '../../framework/view/abstract-view.js';
-import {createEventTemplate} from './event.tpl.js';
+import AbstractView from '../../framework/view/abstract-view';
+import {createEventTemplate} from './event.tpl';
 
 export default class EventView extends AbstractView{
   #point = null;

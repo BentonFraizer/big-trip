@@ -1,5 +1,5 @@
-import AbstractView from '../../framework/view/abstract-view.js';
-import {createNewEventFormTemplate} from './add-new-event-form.tpl.js';
+import AbstractView from '../../framework/view/abstract-view';
+import {createNewEventFormTemplate} from './add-new-event-form.tpl';
 
 export default class NewEventFormView extends AbstractView {
   get template() {
