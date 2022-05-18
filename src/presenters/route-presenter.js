@@ -14,6 +14,8 @@ export default class RoutePresenter {
 
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
   #eventsListComponent = new EventsListView();                // ul      class="trip-events__list"
+  #sortComponent = new SortFormView();                        // form    class="trip-events__trip-sort  trip-sort"
+  #noPoinstComponent = new EventsListEmptyView();             // p       class="trip-events__msg">
 
   #listPoints = [];
   #allOffers = [];
@@ -28,12 +30,23 @@ export default class RoutePresenter {
     this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js.
     this.#allOffers = [...this.#offersModel.offers];  //массив вообще всех офферов
 
-    this.#renderSortAndEventsContainer();
+    this.#renderSortAndEventsBoard();
   }
 
+  //Метод отрисовки компонента сортировки
+  #renderSort () {
+    render(this.#sortComponent, this.#sortAndEventsContainer.element);
+  }
+
+  //Метод отрисовки компонента списка <ul>, в который будут попадать либо точки маршрута либо информационные сообщения как элементы списка
+  #renderPointsOrInfoComponent () {
+    render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
+  }
+
+  //Метод отрисовки компонента точки маршрута
   #renderPoint (point, points, offers) {
     const pointComponent = new EventView(point);
-    const editPointFormComponent = new EditEventFormView(points, offers);
+    const editPointFormComponent = new EditEventFormView(offers, points);
 
     const replacePointToForm = () => {
       replace(editPointFormComponent, pointComponent);
@@ -73,18 +86,28 @@ export default class RoutePresenter {
     render(pointComponent, this.#eventsListComponent.element);
   }
 
-  #renderSortAndEventsContainer () {
-    render(this.#sortAndEventsContainer, this.#pageBodyContainer);
-    render(new SortFormView(), this.#sortAndEventsContainer.element);
-    render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
-
-    if (!this.#listPoints.length) {
-      render(new EventsListEmptyView(), this.#sortAndEventsContainer.element);
-      return;
-    }
-
+  #rendetPointsList () {
     this.#listPoints.forEach((element, index) => {
       this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
     });
+  }
+
+  //Метод отрисовки компонента информационного сообщения об отсутствии точек маршрута
+  #renderNoPoints () {
+    render(this.#noPoinstComponent, this.#sortAndEventsContainer.element);
+  }
+
+  //Метод отрисовки представления (доски) с компонентами сортировки, точек маршрута, информационных сообщений
+  #renderSortAndEventsBoard () {
+    render(this.#sortAndEventsContainer, this.#pageBodyContainer);
+    this.#renderSort();
+    this.#renderPointsOrInfoComponent();
+
+    if (!this.#listPoints.length) {
+      this.#renderNoPoints();
+      return;
+    }
+
+    this.#rendetPointsList();
   }
 }

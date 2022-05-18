@@ -21,7 +21,7 @@ export default class EditEventFormView extends AbstractView {
   #points = null;
   #offers = null;
 
-  constructor(points = EMPTY_POINT, offers) {
+  constructor(offers, points = EMPTY_POINT) {
     super();
     this.#points = points;
     this.#offers = offers;
