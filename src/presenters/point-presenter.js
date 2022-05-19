@@ -29,9 +29,9 @@ export default class PointPresenter {
     this.#pointComponent = new EventView(point);
     this.#editPointFormComponent = new EditEventFormView(offers, points);
 
-    this.#pointComponent.setOpenEditFormClickHandler(() => this.#openEditFormClickHandler());
-    this.#editPointFormComponent.setCloseEditFormClickHandler(() => this.#closeEditFormClickHandler());
-    this.#editPointFormComponent.setFormSubmitHandler(() => this.#closeEditFormSubmitHandler());
+    this.#pointComponent.setOpenEditFormClickHandler(() => this.#handleOpenEditFormClick());
+    this.#editPointFormComponent.setCloseEditFormClickHandler(() => this.#handleCloseEditFormClick());
+    this.#editPointFormComponent.setFormSubmitHandler(() => this.#handleFormSubmit());
 
     //Если значения в переменных равны null, значит рендер точки маршрута выполняется впервые. Просто рендерим компонент точки маршрута
     if (prevPointComponent === null || prevEditPointFormComponent === null) {
@@ -75,17 +75,17 @@ export default class PointPresenter {
   };
 
   //Замена точки маршрута на форму по клику на кнопку в виде галочки
-  #openEditFormClickHandler () {
+  #handleOpenEditFormClick () {
     this.#replacePointToForm();
   }
 
   //Замена формы на точку маршрута по клику на кнопку с изображением галочки
-  #closeEditFormClickHandler () {
+  #handleCloseEditFormClick () {
     this.#replaceFormToPoint();
   }
 
   //Замена формы на точку маршрута по клику на кнопку "Save"
-  #closeEditFormSubmitHandler () {
+  #handleFormSubmit () {
     this.#replaceFormToPoint();
   }
 }
