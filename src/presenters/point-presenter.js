@@ -1,7 +1,7 @@
 import EventView from '../views/event/event-view';
 import EditEventFormView from '../views/edit_event_form/edit-event-form-view';
 import {isEscKeyPressed} from '../utils';
-import {render, replace} from '../framework/render';
+import {render, replace, remove} from '../framework/render';
 
 export default class PointPresenter {
   #eventsListContainer = null;
@@ -22,6 +22,10 @@ export default class PointPresenter {
     this.#offers = offers;
     this.#points = points;
 
+    //Сохранение свойств в переменные для дальнейшего переиспользования
+    const prevPointComponent = this.#pointComponent;
+    const prevEditPointFormComponent = this.#editPointFormComponent;
+
     this.#pointComponent = new EventView(point);
     this.#editPointFormComponent = new EditEventFormView(offers, points);
 
@@ -29,7 +33,27 @@ export default class PointPresenter {
     this.#editPointFormComponent.setCloseEditFormClickHandler(() => this.#closeEditFormClickHandler());
     this.#editPointFormComponent.setFormSubmitHandler(() => this.#closeEditFormSubmitHandler());
 
-    render(this.#pointComponent, this.#eventsListContainer);
+    //Если значения в переменных равны null, значит рендер точки маршрута выполняется впервые. Просто рендерим компонент точки маршрута
+    if (prevPointComponent === null || prevEditPointFormComponent === null) {
+      return render(this.#pointComponent, this.#eventsListContainer);
+    }
+
+    //Проверки на наличие элемента в DOM. Нужна, чтобы не пытаться заменить то, что не было отрисовано
+    if (this.#eventsListContainer.contains(prevPointComponent.element)) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    if (this.#eventsListContainer.contains(prevEditPointFormComponent.element)) {
+      replace(this.#editPointFormComponent, prevEditPointFormComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevEditPointFormComponent);
+  }
+
+  destroy () {
+    remove(this.#pointComponent);
+    remove(this.#editPointFormComponent);
   }
 
   #replacePointToForm = () => {
