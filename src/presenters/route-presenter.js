@@ -4,6 +4,7 @@ import SortAndEventsContainerView from '../views/sort_and_events_container/sort-
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
 import {render} from '../framework/render';
 import PointPresenter from './point-presenter';
+import {updateItem} from '../utils';
 
 export default class RoutePresenter {
   #pageBodyContainer = null;
@@ -30,6 +31,13 @@ export default class RoutePresenter {
     this.#allOffers = [...this.#offersModel.offers];  //массив вообще всех офферов
 
     this.#renderSortAndEventsBoard();
+  }
+
+  //Метод для обновления данных в компоненте точки маршрута
+  //На второй строке метода повторно инициализируется Point-презентер уже с новыми данными
+  #handlePointChange (updatedPoint) {
+    this.#listPoints = updateItem(this.#listPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   }
 
   //Метод отрисовки компонента сортировки
