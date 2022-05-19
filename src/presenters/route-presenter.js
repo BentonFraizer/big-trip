@@ -17,6 +17,7 @@ export default class RoutePresenter {
 
   #listPoints = [];
   #allOffers = [];
+  #pointPresenters = new Map();
 
   constructor(pageBodyContainer, pointsModel, offersModel) {
     this.#pageBodyContainer = pageBodyContainer;
@@ -37,7 +38,7 @@ export default class RoutePresenter {
   }
 
   //Метод отрисовки компонента списка <ul>, в который будут попадать либо точки маршрута либо информационные сообщения как элементы списка
-  #renderPointsOrInfoComponent () {
+  #renderPointsOrInfoContainer () {
     render(this.#eventsListContainer, this.#sortAndEventsContainer.element);
   }
 
@@ -45,8 +46,16 @@ export default class RoutePresenter {
   #renderPoint (point, points, offers) {
     const pointPresenter = new PointPresenter(this.#eventsListContainer.element);
     pointPresenter.init(point, points, offers);
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
+  //Метод очистки всех точек маршрута созданных из класса PointPresenter и помещенных в Map #pointPresenters
+  #clearPoints () {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+  }
+
+  //Метод отрисовки всех точек маршрута
   #renderPoints () {
     this.#listPoints.forEach((element, index) => {
       this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
@@ -62,7 +71,7 @@ export default class RoutePresenter {
   #renderSortAndEventsBoard () {
     render(this.#sortAndEventsContainer, this.#pageBodyContainer);
     this.#renderSort();
-    this.#renderPointsOrInfoComponent();
+    this.#renderPointsOrInfoContainer();
 
     if (!this.#listPoints.length) {
       this.#renderNoPoints();
