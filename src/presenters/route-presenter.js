@@ -35,10 +35,10 @@ export default class RoutePresenter {
 
   //Метод для обновления данных в компоненте точки маршрута
   //На второй строке метода повторно инициализируется Point-презентер уже с новыми данными
-  #handlePointChange (updatedPoint) {
+  #handlePointChange = (updatedPoint) => {
     this.#listPoints = updateItem(this.#listPoints, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
-  }
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.#listPoints, this.#allOffers);
+  };
 
   //Метод отрисовки компонента сортировки
   #renderSort () {
@@ -52,7 +52,7 @@ export default class RoutePresenter {
 
   //Метод отрисовки компонента точки маршрута
   #renderPoint (point, points, offers) {
-    const pointPresenter = new PointPresenter(this.#eventsListContainer.element);
+    const pointPresenter = new PointPresenter(this.#eventsListContainer.element, this.#handlePointChange);
     pointPresenter.init(point, points, offers);
     this.#pointPresenters.set(point.id, pointPresenter);
   }

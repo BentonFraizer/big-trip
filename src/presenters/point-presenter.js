@@ -5,6 +5,7 @@ import {render, replace, remove} from '../framework/render';
 
 export default class PointPresenter {
   #eventsListContainer = null;
+  #changeData = null;
 
   #pointComponent = null;
   #editPointFormComponent = null;
@@ -13,8 +14,9 @@ export default class PointPresenter {
   #offers = null;
   #points = null;
 
-  constructor(eventsListContainer) {
+  constructor(eventsListContainer, changeData) {
     this.#eventsListContainer = eventsListContainer;
+    this.#changeData = changeData;
   }
 
   init (point, points, offers) {
@@ -30,6 +32,7 @@ export default class PointPresenter {
     this.#editPointFormComponent = new EditEventFormView(offers, points);
 
     this.#pointComponent.setOpenEditFormClickHandler(() => this.#handleOpenEditFormClick());
+    this.#pointComponent.setFavoriteClickHandler(() => this.#handleFavoriteClick());
     this.#editPointFormComponent.setCloseEditFormClickHandler(() => this.#handleCloseEditFormClick());
     this.#editPointFormComponent.setFormSubmitHandler(() => this.#handleFormSubmit());
 
@@ -73,6 +76,11 @@ export default class PointPresenter {
       this.#replaceFormToPoint();
     }
   };
+
+  //Обработка клика кнопки добавления в Избранное
+  #handleFavoriteClick () {
+    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+  }
 
   //Замена точки маршрута на форму по клику на кнопку в виде галочки
   #handleOpenEditFormClick () {
