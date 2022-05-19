@@ -94,6 +94,7 @@ export default class PointPresenter {
 
   //Замена формы на точку маршрута по клику на кнопку "Save"
   #handleFormSubmit () {
+    this.#changeData({...this.#point});
     this.#replaceFormToPoint();
   }
 }
