@@ -3,9 +3,15 @@ import EditEventFormView from '../views/edit_event_form/edit-event-form-view';
 import {isEscKeyPressed} from '../utils';
 import {render, replace, remove} from '../framework/render';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class PointPresenter {
   #eventsListContainer = null;
   #changeData = null;
+  #changeMode = null;
 
   #pointComponent = null;
   #editPointFormComponent = null;
@@ -13,10 +19,12 @@ export default class PointPresenter {
   #point = null;
   #offers = null;
   #points = null;
+  #mode = Mode.DEFAULT;
 
-  constructor(eventsListContainer, changeData) {
+  constructor(eventsListContainer, changeData, changeMode) {
     this.#eventsListContainer = eventsListContainer;
     this.#changeData = changeData;
+    this.#changeMode = changeMode;
   }
 
   init (point, points, offers) {
@@ -42,11 +50,11 @@ export default class PointPresenter {
     }
 
     //Проверки на наличие элемента в DOM. Нужна, чтобы не пытаться заменить то, что не было отрисовано
-    if (this.#eventsListContainer.contains(prevPointComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#pointComponent, prevPointComponent);
     }
 
-    if (this.#eventsListContainer.contains(prevEditPointFormComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#editPointFormComponent, prevEditPointFormComponent);
     }
 
@@ -59,14 +67,23 @@ export default class PointPresenter {
     remove(this.#editPointFormComponent);
   }
 
+  resetView = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToPoint();
+    }
+  };
+
   #replacePointToForm = () => {
     replace(this.#editPointFormComponent, this.#pointComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#changeMode();
+    this.#mode = Mode.EDITING;
   };
 
   #replaceFormToPoint = () => {
     replace(this.#pointComponent, this.#editPointFormComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
   };
 
   //Функция обработки нажатия клавиши "Esc" в момент когда открыта формы редактирования, для её замены на точку маршрута

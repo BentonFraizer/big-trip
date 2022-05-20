@@ -33,7 +33,12 @@ export default class RoutePresenter {
     this.#renderSortAndEventsBoard();
   }
 
-  //Метод для обновления данных в компоненте точки маршрута
+  //Метод-обработчик для "сворачивания" всех форм
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  //Метод-обработчик для отслеживания обновления данных в компоненте точки маршрута
   //На второй строке метода повторно инициализируется Point-презентер уже с новыми данными
   #handlePointChange = (updatedPoint) => {
     this.#listPoints = updateItem(this.#listPoints, updatedPoint);
@@ -52,7 +57,7 @@ export default class RoutePresenter {
 
   //Метод отрисовки компонента точки маршрута
   #renderPoint (point, points, offers) {
-    const pointPresenter = new PointPresenter(this.#eventsListContainer.element, this.#handlePointChange);
+    const pointPresenter = new PointPresenter(this.#eventsListContainer.element, this.#handlePointChange, this.#handleModeChange);
     pointPresenter.init(point, points, offers);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
