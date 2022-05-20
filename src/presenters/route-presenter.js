@@ -1,11 +1,10 @@
-import EditEventFormView from '../views/edit_event_form/edit-event-form-view.js';
-import EventView from '../views/event/event-view.js';
-import EventsListView from '../views/events_list/events-list-view.js';
-import SortFormView from '../views/sort_form/sort-form-view.js';
-import {isEscKeyPressed} from '../utils.js';
-import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view.js';
-import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view.js';
-import {render, replace} from '../framework/render.js';
+import EventsListView from '../views/events_list/events-list-view';
+import SortFormView from '../views/sort_form/sort-form-view';
+import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view';
+import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
+import {render} from '../framework/render';
+import PointPresenter from './point-presenter';
+import {updateItem} from '../utils';
 
 export default class RoutePresenter {
   #pageBodyContainer = null;
@@ -13,10 +12,13 @@ export default class RoutePresenter {
   #offersModel = null;
 
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
-  #eventsListComponent = new EventsListView();                // ul      class="trip-events__list"
+  #eventsListContainer = new EventsListView();                // ul      class="trip-events__list"
+  #sortComponent = new SortFormView();                        // form    class="trip-events__trip-sort  trip-sort"
+  #noPoinstComponent = new EventsListEmptyView();             // p       class="trip-events__msg">
 
   #listPoints = [];
   #allOffers = [];
+  #pointPresenters = new Map();
 
   constructor(pageBodyContainer, pointsModel, offersModel) {
     this.#pageBodyContainer = pageBodyContainer;
@@ -28,63 +30,67 @@ export default class RoutePresenter {
     this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js.
     this.#allOffers = [...this.#offersModel.offers];  //массив вообще всех офферов
 
-    this.#renderSortAndEventsContainer();
+    this.#renderSortAndEventsBoard();
   }
 
+  //Метод-обработчик для "сворачивания" всех форм
+  #handleModeChange = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.resetView());
+  };
+
+  //Метод-обработчик для отслеживания обновления данных в компоненте точки маршрута
+  //На второй строке метода повторно инициализируется Point-презентер уже с новыми данными
+  #handlePointChange = (updatedPoint) => {
+    this.#listPoints = updateItem(this.#listPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.#listPoints, this.#allOffers);
+  };
+
+  //Метод отрисовки компонента сортировки
+  #renderSort () {
+    render(this.#sortComponent, this.#sortAndEventsContainer.element);
+  }
+
+  //Метод отрисовки компонента списка <ul>, в который будут попадать либо точки маршрута либо информационные сообщения как элементы списка
+  #renderPointsOrInfoContainer () {
+    render(this.#eventsListContainer, this.#sortAndEventsContainer.element);
+  }
+
+  //Метод отрисовки компонента точки маршрута
   #renderPoint (point, points, offers) {
-    const pointComponent = new EventView(point);
-    const editPointFormComponent = new EditEventFormView(points, offers);
-
-    const replacePointToForm = () => {
-      replace(editPointFormComponent, pointComponent);
-    };
-
-    const replaceFormToPoint = () => {
-      replace(pointComponent, editPointFormComponent);
-    };
-
-    //Функция обработки нажатия клавиши "Esc" в момент когда открыта формы редактирования, для её замены на точку маршрута
-    const onEscKeyDown = (evt) => {
-      if (isEscKeyPressed(evt)) {
-        evt.preventDefault();
-        replaceFormToPoint();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
-
-    //Замена точки маршрута на форму по клику на кнопку в виде галочки
-    pointComponent.setOpenEditFormClickHandler(() => {
-      replacePointToForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    //Замена формы на точку маршрута по клику на кнопку с изображением галочки
-    editPointFormComponent.setCloseEditFormClickHandler(() => {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    //Замена формы на точку маршрута по клику на кнопку "Save"
-    editPointFormComponent.setFormSubmitHandler(() => {
-      replaceFormToPoint();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    render(pointComponent, this.#eventsListComponent.element);
+    const pointPresenter = new PointPresenter(this.#eventsListContainer.element, this.#handlePointChange, this.#handleModeChange);
+    pointPresenter.init(point, points, offers);
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #renderSortAndEventsContainer () {
-    render(this.#sortAndEventsContainer, this.#pageBodyContainer);
-    render(new SortFormView(), this.#sortAndEventsContainer.element);
-    render(this.#eventsListComponent, this.#sortAndEventsContainer.element);
+  //Метод очистки всех точек маршрута созданных из класса PointPresenter и помещенных в Map #pointPresenters
+  #clearPoints () {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+  }
 
-    if (!this.#listPoints.length) {
-      render(new EventsListEmptyView(), this.#sortAndEventsContainer.element);
-      return;
-    }
-
+  //Метод отрисовки всех точек маршрута
+  #renderPoints () {
     this.#listPoints.forEach((element, index) => {
       this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
     });
+  }
+
+  //Метод отрисовки компонента информационного сообщения об отсутствии точек маршрута
+  #renderNoPoints () {
+    render(this.#noPoinstComponent, this.#sortAndEventsContainer.element);
+  }
+
+  //Метод отрисовки представления (доски) с компонентами сортировки, точек маршрута, информационных сообщений
+  #renderSortAndEventsBoard () {
+    render(this.#sortAndEventsContainer, this.#pageBodyContainer);
+    this.#renderSort();
+    this.#renderPointsOrInfoContainer();
+
+    if (!this.#listPoints.length) {
+      this.#renderNoPoints();
+      return;
+    }
+
+    this.#renderPoints();
   }
 }

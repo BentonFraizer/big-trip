@@ -1,5 +1,6 @@
+import {nanoid} from 'nanoid';
 export const getPoint = () => ({
-  'id': '0',
+  'id': nanoid(),
   'type': 'ship',
   'dateFrom': '2022-05-07T02:25:22.724Z',
   'dateTo': '2022-05-07T21:12:38.219Z',

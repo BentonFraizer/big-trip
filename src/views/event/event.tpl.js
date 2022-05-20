@@ -1,4 +1,4 @@
-import {humanizeDateMonthDay} from '../../utils.js';
+import {humanizeDateMonthDay} from '../../utils';
 import dayjs from 'dayjs';
 
 const MINUTES_IN_DAY = 1440;
@@ -65,20 +65,27 @@ const createEventTemplate = (point) => {
 
   //Функция, составляющая необходимый формат даты для элемента с классом 'event__duration'
   const buildDateFormat = (daysDiff, hoursDiff, minutesDiff) => {
+    if (timeDaysDifference === undefined && restHoursAmount === undefined && restMinutesAmount === undefined) {
+      return '';
+    }
     if (daysDiff === 0 && hoursDiff === 0) {
       return `${(restMinutesAmount.toString()).padStart(2, '0')}M`;
     }
     if (daysDiff === 0) {
       return `${(hoursDiff.toString()).padStart(2, '0')}H ${(minutesDiff.toString()).padStart(2, '0')}M`;
-    } else {
+    } else if (timeDaysDifference !== undefined && restHoursAmount !== undefined && restMinutesAmount !== undefined) {
       return `${(timeDaysDifference.toString()).padStart(2, '0')}D ${(restHoursAmount.toString()).padStart(2, '0')}H ${(restMinutesAmount.toString()).padStart(2, '0')}M`;
     }
   };
   const eventDuration = buildDateFormat(timeDaysDifference, restHoursAmount, restMinutesAmount);
 
   const favoriteClassName = isFavorite
-    ? 'event__favorite-btn event__favorite-btn--active'
-    : 'event__favorite-btn';
+    ? ' event__favorite-btn--active'
+    : '';
+
+  const destinationName = destination === undefined
+    ? ''
+    : destination.name;
 
   return (
     `<li class="trip-events__item">
@@ -87,7 +94,7 @@ const createEventTemplate = (point) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${destination.name}</h3>
+        <h3 class="event__title">${type} ${destinationName}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${dayjs(dateFrom).format('YYYY-MM-DDTHH:mm')}">${dayjs(dateFrom).format('HH:mm')}</time>
@@ -112,7 +119,7 @@ const createEventTemplate = (point) => {
             <span class="event__offer-price">${staticOffers.offers[1].price}</span>
           </li>
         </ul>
-        <button class="${favoriteClassName}" type="button">
+        <button class="event__favorite-btn${favoriteClassName}" type="button">
           <span class="visually-hidden">Add to favorite</span>
           <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
             <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"></path>

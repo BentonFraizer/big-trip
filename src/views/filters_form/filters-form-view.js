@@ -1,5 +1,5 @@
-import AbstractView from '../../framework/view/abstract-view.js';
-import {createFiltersFormTemplate} from './filters-form.tpl.js';
+import AbstractView from '../../framework/view/abstract-view';
+import {createFiltersFormTemplate} from './filters-form.tpl';
 
 export default class FiltersFormView extends AbstractView {
   get template() {

@@ -1,12 +1,12 @@
-import FiltersFormView from './views/filters_form/filters-form-view.js';
-import RoutePresenter from './presenters/route-presenter.js';
-import {render} from './framework/render.js';
-import PointsModel from './models/points-model.js';
-import OffersModel from './models/offers-model.js';
-import {getOffers} from './mock/offers.js';
-import {getPoint} from './mock/point.js';
-import TripInfoView from './views/trip_info/trip-info-view.js';
-import NewEventButtonView from './views/new_event_button/new-event-button-view.js';
+import FiltersFormView from './views/filters_form/filters-form-view';
+import RoutePresenter from './presenters/route-presenter';
+import {render} from './framework/render';
+import PointsModel from './models/points-model';
+import OffersModel from './models/offers-model';
+import {getOffers} from './mock/offers';
+import {getPoint} from './mock/point';
+import TripInfoView from './views/trip_info/trip-info-view';
+import NewEventButtonView from './views/new_event_button/new-event-button-view';
 
 const POINTS_AMOUNT = 3;
 

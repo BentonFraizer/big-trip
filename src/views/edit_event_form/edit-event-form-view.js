@@ -1,5 +1,5 @@
-import AbstractView from '../../framework/view/abstract-view.js';
-import {createEditEventFormTemplate} from './edit-event-form.tpl.js';
+import AbstractView from '../../framework/view/abstract-view';
+import {createEditEventFormTemplate} from './edit-event-form.tpl';
 
 const EMPTY_POINT = {
   'id': null,
@@ -21,7 +21,7 @@ export default class EditEventFormView extends AbstractView {
   #points = null;
   #offers = null;
 
-  constructor(points = EMPTY_POINT, offers) {
+  constructor(offers, points = EMPTY_POINT) {
     super();
     this.#points = points;
     this.#offers = offers;
@@ -38,7 +38,7 @@ export default class EditEventFormView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit();
+    this._callback.formSubmit(this.#points, this.#offers);
   };
 
   setCloseEditFormClickHandler (callback){
