@@ -17,8 +17,6 @@ export default class PointPresenter {
   #editPointFormComponent = null;
 
   #point = null;
-  #offers = null;
-  #points = null;
   #mode = Mode.DEFAULT;
 
   constructor(eventsListContainer, changeData, changeMode) {
@@ -29,8 +27,6 @@ export default class PointPresenter {
 
   init (point, points, offers) {
     this.#point = point;
-    this.#offers = offers;
-    this.#points = points;
 
     //Сохранение свойств в переменные для дальнейшего переиспользования
     const prevPointComponent = this.#pointComponent;
@@ -39,10 +35,10 @@ export default class PointPresenter {
     this.#pointComponent = new EventView(point);
     this.#editPointFormComponent = new EditEventFormView(offers, points);
 
-    this.#pointComponent.setOpenEditFormClickHandler(() => this.#handleOpenEditFormClick());
-    this.#pointComponent.setFavoriteClickHandler(() => this.#handleFavoriteClick());
-    this.#editPointFormComponent.setCloseEditFormClickHandler(() => this.#handleCloseEditFormClick());
-    this.#editPointFormComponent.setFormSubmitHandler(() => this.#handleFormSubmit());
+    this.#pointComponent.setOpenEditFormClickHandler(this.#handleOpenEditFormClick);
+    this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
+    this.#editPointFormComponent.setCloseEditFormClickHandler(this.#handleCloseEditFormClick);
+    this.#editPointFormComponent.setFormSubmitHandler(this.#handleFormSubmit);
 
     //Если значения в переменных равны null, значит рендер точки маршрута выполняется впервые. Просто рендерим компонент точки маршрута
     if (prevPointComponent === null || prevEditPointFormComponent === null) {
@@ -95,23 +91,23 @@ export default class PointPresenter {
   };
 
   //Обработка клика кнопки добавления в Избранное
-  #handleFavoriteClick () {
+  #handleFavoriteClick = () => {
     this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
-  }
+  };
 
   //Замена точки маршрута на форму по клику на кнопку в виде галочки
-  #handleOpenEditFormClick () {
+  #handleOpenEditFormClick = () => {
     this.#replacePointToForm();
-  }
+  };
 
   //Замена формы на точку маршрута по клику на кнопку с изображением галочки
-  #handleCloseEditFormClick () {
+  #handleCloseEditFormClick = () => {
     this.#replaceFormToPoint();
-  }
+  };
 
   //Замена формы на точку маршрута по клику на кнопку "Save"
-  #handleFormSubmit () {
+  #handleFormSubmit = () => {
     this.#changeData({...this.#point});
     this.#replaceFormToPoint();
-  }
+  };
 }
