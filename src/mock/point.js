@@ -1,9 +1,28 @@
 import {nanoid} from 'nanoid';
+import {getRandomInteger} from '../utils';
+import dayjs from 'dayjs';
+
+const MAX_DAYS_BEFORE = 7;
+const MAX_DAYS_AFTER = 7;
+
+
+const generateDateFrom = () => {
+  const daysGap = getRandomInteger(-MAX_DAYS_BEFORE, 0);
+
+  return dayjs().add(daysGap, 'day').toDate();
+};
+
+const generateDateTo = () => {
+  const daysGap = getRandomInteger(1, MAX_DAYS_AFTER);
+
+  return dayjs().add(daysGap, 'day').toDate();
+};
+
 export const getPoint = () => ({
   'id': nanoid(),
   'type': 'ship',
-  'dateFrom': '2022-05-07T02:25:22.724Z',
-  'dateTo': '2022-05-07T21:12:38.219Z',
+  'dateFrom': dayjs(generateDateFrom()).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+  'dateTo': dayjs(generateDateTo()).format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
   'destination': {
     'name': 'Amsterdam',
     'description': 'Amsterdam, full of of cozy canteens where you can try the best coffee in the Middle East.',
@@ -34,7 +53,7 @@ export const getPoint = () => ({
       }
     ],
   },
-  'basePrice': 300,
+  'basePrice': getRandomInteger(100, 500),
   'isFavorite': true,
   'offers': [1, 3],
 });
