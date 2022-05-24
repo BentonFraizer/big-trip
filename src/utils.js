@@ -34,4 +34,66 @@ const updateItem = (items, update) => {
   ];
 };
 
-export {getRandomInteger, humanizeDateMonthDay, isEscKeyPressed, updateItem};
+const getWeightForPrices = (pointA, pointB) => {
+  if (pointA === pointB) {
+    return 0;
+  }
+
+  if (pointA > pointB) {
+    return -1;
+  }
+
+  if (pointA < pointB) {
+    return 1;
+  }
+};
+
+const getWeightForTime = (pointAFrom, pointATo, pointBFrom, pointBTo) => {
+  const timeAFrom = dayjs(pointAFrom);
+  const timeATo = dayjs(pointATo);
+  const timeBFrom = dayjs(pointBFrom);
+  const timeBTo = dayjs(pointBTo);
+  const timeDifferenceForPointA = Math.abs(timeAFrom.diff(timeATo));
+  const timeDifferenceForPointB = Math.abs(timeBFrom.diff(timeBTo));
+  if (timeDifferenceForPointA === timeDifferenceForPointB) {
+    return 0;
+  }
+
+  if (timeDifferenceForPointA > timeDifferenceForPointB) {
+    return -1;
+  }
+
+  if (timeDifferenceForPointA < timeDifferenceForPointB) {
+    return 1;
+  }
+};
+
+const getWeightForDate = (pointAFrom, pointBFrom) => {
+  const timeAFrom = dayjs(pointAFrom);
+  const timeBFrom = dayjs(pointBFrom);
+  const differencePointAFromAndNow = dayjs().diff(timeAFrom);
+  const differencePointBFromAndNow = dayjs().diff(timeBFrom);
+
+  if (differencePointAFromAndNow === differencePointBFromAndNow) {
+    return 0;
+  }
+
+  if (differencePointAFromAndNow < differencePointBFromAndNow) {
+    return -1;
+  }
+
+  if (differencePointAFromAndNow > differencePointBFromAndNow) {
+    return 1;
+  }
+};
+
+//Функция для сортировки точек маршрута по полю "PRICE"
+const sortPriceDown = (pointA, pointB) => getWeightForPrices(pointA.basePrice, pointB.basePrice);
+
+//Функция для сортировки точек маршрута по полю "TIME"
+const sortTimeDown = (pointA, pointB) => getWeightForTime(pointA.dateFrom, pointA.dateTo, pointB.dateFrom, pointB.dateTo);
+
+//Функция для сортировки точек по полю "DAY"
+const sortDateDown = (pointA, pointB) => getWeightForDate(pointA.dateFrom, pointB.dateFrom);
+
+export {getRandomInteger, humanizeDateMonthDay, isEscKeyPressed, updateItem, sortPriceDown, sortTimeDown, sortDateDown};
