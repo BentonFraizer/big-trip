@@ -2,18 +2,16 @@ import {nanoid} from 'nanoid';
 import {getRandomInteger} from '../utils';
 import dayjs from 'dayjs';
 
-const MAX_DAYS_BEFORE = 7;
-const MAX_DAYS_AFTER = 7;
-
+const MAX_DAYS = 7;
 
 const generateDateFrom = () => {
-  const daysGap = getRandomInteger(-MAX_DAYS_BEFORE, 0);
+  const daysGap = getRandomInteger(-MAX_DAYS, 0);
 
   return dayjs().add(daysGap, 'day').toDate();
 };
 
 const generateDateTo = () => {
-  const daysGap = getRandomInteger(1, MAX_DAYS_AFTER);
+  const daysGap = getRandomInteger(1, MAX_DAYS);
 
   return dayjs().add(daysGap, 'day').toDate();
 };
