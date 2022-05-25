@@ -5,6 +5,8 @@ import EventsListEmptyView from '../views/events_list_empty/events-list-empty-vi
 import {render} from '../framework/render';
 import PointPresenter from './point-presenter';
 import {updateItem} from '../utils';
+import {SortType} from '../consts';
+import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils';
 
 export default class RoutePresenter {
   #pageBodyContainer = null;
@@ -19,6 +21,7 @@ export default class RoutePresenter {
   #listPoints = [];
   #allOffers = [];
   #pointPresenters = new Map();
+  #currentSortType = SortType.DAY;
 
   constructor(pageBodyContainer, pointsModel, offersModel) {
     this.#pageBodyContainer = pageBodyContainer;
@@ -29,6 +32,7 @@ export default class RoutePresenter {
   init () {
     this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js.
     this.#allOffers = [...this.#offersModel.offers];  //массив вообще всех офферов
+    this.#sortPoints();
 
     this.#renderSortAndEventsBoard();
   }
@@ -45,9 +49,39 @@ export default class RoutePresenter {
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.#listPoints, this.#allOffers);
   };
 
+  #sortPoints = (sortType) => {
+    switch (sortType) {
+      case SortType.TIME:
+        this.#listPoints.sort(sortTimeDown);
+        break;
+      case SortType.PRICE:
+        this.#listPoints.sort(sortPriceDown);
+        break;
+      default:
+        this.#listPoints.sort(sortDateDown);
+    }
+
+    this.#currentSortType = sortType;
+  };
+
+  //Метод для сортировки точек маршрута. Здесь по порядку выполняются: сортировка, очистка списка, рендеринг нового списка
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    // - Сортируем задачи
+    this.#sortPoints(sortType);
+    // - Очищаем список
+    this.#clearPoints();
+    // - Рендерим список заново
+    this.#renderPoints();
+  };
+
   //Метод отрисовки компонента сортировки
   #renderSort () {
     render(this.#sortComponent, this.#sortAndEventsContainer.element);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
   //Метод отрисовки компонента списка <ul>, в который будут попадать либо точки маршрута либо информационные сообщения как элементы списка
