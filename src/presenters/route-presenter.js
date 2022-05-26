@@ -90,9 +90,9 @@ export default class RoutePresenter {
   }
 
   //Метод отрисовки компонента точки маршрута
-  #renderPoint (point, points, offers) {
+  #renderPoint (point, offers) {
     const pointPresenter = new PointPresenter(this.#eventsListContainer.element, this.#handlePointChange, this.#handleModeChange);
-    pointPresenter.init(point, points, offers);
+    pointPresenter.init(point, offers);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
@@ -105,7 +105,7 @@ export default class RoutePresenter {
   //Метод отрисовки всех точек маршрута
   #renderPoints () {
     this.#listPoints.forEach((element, index) => {
-      this.#renderPoint(this.#listPoints[index], this.#listPoints, this.#allOffers);
+      this.#renderPoint(this.#listPoints[index], this.#allOffers);
     });
   }
 

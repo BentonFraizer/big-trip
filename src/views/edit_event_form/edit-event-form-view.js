@@ -18,17 +18,17 @@ const EMPTY_POINT = {
 
 export default class EditEventFormView extends AbstractView {
   editable = true;
-  #points = null;
+  #point = null;
   #offers = null;
 
-  constructor(offers, points = EMPTY_POINT) {
+  constructor(point = EMPTY_POINT, offers) {
     super();
-    this.#points = points;
+    this.#point = point;
     this.#offers = offers;
   }
 
   get template() {
-    return createEditEventFormTemplate(this.#points, this.#offers);
+    return createEditEventFormTemplate(this.#point, this.#offers);
   }
 
   setFormSubmitHandler (callback){
@@ -38,7 +38,7 @@ export default class EditEventFormView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#points, this.#offers);
+    this._callback.formSubmit(this.#point, this.#offers);
   };
 
   setCloseEditFormClickHandler (callback){

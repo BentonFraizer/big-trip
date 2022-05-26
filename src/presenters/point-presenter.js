@@ -17,6 +17,7 @@ export default class PointPresenter {
   #editPointFormComponent = null;
 
   #point = null;
+  #offers = null;
   #mode = Mode.DEFAULT;
 
   constructor(eventsListContainer, changeData, changeMode) {
@@ -25,15 +26,16 @@ export default class PointPresenter {
     this.#changeMode = changeMode;
   }
 
-  init (point, points, offers) {
+  init (point, offers) {
     this.#point = point;
+    this.#offers = offers;
 
     //Сохранение свойств в переменные для дальнейшего переиспользования
     const prevPointComponent = this.#pointComponent;
     const prevEditPointFormComponent = this.#editPointFormComponent;
 
-    this.#pointComponent = new EventView(point);
-    this.#editPointFormComponent = new EditEventFormView(offers, points);
+    this.#pointComponent = new EventView(this.#point);
+    this.#editPointFormComponent = new EditEventFormView(this.#point, this.#offers);
 
     this.#pointComponent.setOpenEditFormClickHandler(this.#handleOpenEditFormClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);

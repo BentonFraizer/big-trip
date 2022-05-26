@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-const createEditEventFormTemplate = (allPoints, allOffers) => {
-  const {basePrice, type, destination, dateFrom, dateTo, offers} = allPoints[0];
+const createEditEventFormTemplate = (point, allOffers) => {
+  const {basePrice, type, destination, dateFrom, dateTo, offers} = point;
 
   //Функция создания разметки для отрисовки картинок поля Destination
   const pictures = destination.pictures;
