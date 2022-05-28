@@ -1,4 +1,4 @@
-import AbstractView from '../../framework/view/abstract-view';
+import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import {createEditEventFormTemplate} from './edit-event-form.tpl';
 
 const EMPTY_POINT = {
@@ -16,12 +16,14 @@ const EMPTY_POINT = {
   'offers': [],
 };
 
-export default class EditEventFormView extends AbstractView {
+const EMPTY_OFFERS = [];
+
+export default class EditEventFormView extends AbstractStatefulView {
   editable = true;
   #point = null;
   #offers = null;
 
-  constructor(point = EMPTY_POINT, offers) {
+  constructor(point = EMPTY_POINT, offers = EMPTY_OFFERS) {
     super();
     this.#point = point;
     this.#offers = offers;
