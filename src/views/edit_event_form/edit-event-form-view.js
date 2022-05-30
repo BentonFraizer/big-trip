@@ -20,17 +20,15 @@ const EMPTY_OFFERS = [];
 
 export default class EditEventFormView extends AbstractStatefulView {
   editable = true;
-  #point = null;
-  #offers = null;
 
   constructor(point = EMPTY_POINT, offers = EMPTY_OFFERS) {
     super();
-    this.#point = point;
-    this.#offers = offers;
+    this._state = EditEventFormView.parseDataToState(point, offers);
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createEditEventFormTemplate(this.#point, this.#offers);
+    return createEditEventFormTemplate(this._state.point, this._state.offers);
   }
 
   setFormSubmitHandler (callback){
@@ -38,9 +36,48 @@ export default class EditEventFormView extends AbstractStatefulView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setCloseEditFormClickHandler(this._callback.closeEditFormClick);
+  };
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#point, this.#offers);
+    this._callback.formSubmit(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
+  };
+
+  #changeCurrentType = (evt) => {
+    evt.preventDefault();
+    if (evt.target.innerHTML !== this._state.point.type) {
+      const newType = evt.target.innerHTML;
+      this.updateElement(
+        {
+          ...this._state.point.type = newType,
+          ...this._state.point.offers = [],
+        },
+        {...this._state.offers}
+      );
+      // console.log('new', this._state);
+    }
+  };
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#changeCurrentType);
+  };
+
+  static parseDataToState = (pointData, offersData) => ({
+    point: {
+      ...pointData,
+    },
+    offers: [...offersData],
+  });
+
+  static parseStateToData = (statePoint, stateOffers) => {
+    const point = {...statePoint};
+    const offers = [...stateOffers];
+
+    return {point, offers};
   };
 
   setCloseEditFormClickHandler (callback){
