@@ -67,6 +67,7 @@ export default class PointPresenter {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#editPointFormComponent.reset(this.#point, this.#offers);
       this.#replaceFormToPoint();
     }
   };
@@ -88,6 +89,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (isEscKeyPressed(evt)) {
       evt.preventDefault();
+      this.#editPointFormComponent.reset(this.#point, this.#offers);
       this.#replaceFormToPoint();
     }
   };
@@ -107,6 +109,7 @@ export default class PointPresenter {
 
   //Замена формы на точку маршрута по клику на кнопку с изображением галочки
   #handleCloseEditFormClick = () => {
+    this.#editPointFormComponent.reset(this.#point, this.#offers);
     this.#replaceFormToPoint();
   };
 

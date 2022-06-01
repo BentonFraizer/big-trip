@@ -31,6 +31,13 @@ export default class EditEventFormView extends AbstractStatefulView {
     return createEditEventFormTemplate(this._state.point, this._state.offers);
   }
 
+  //Метод для сброса несохранённых данных. (Используется когда форма редактирования открыта и пользователь нажимает на Esc либо на кнопку закрытия задачи)
+  reset = (pointData, offersData) => {
+    this.updateElement(
+      EditEventFormView.parseDataToState(pointData, offersData),
+    );
+  };
+
   setFormSubmitHandler (callback){
     this._callback.formSubmit = callback;
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
