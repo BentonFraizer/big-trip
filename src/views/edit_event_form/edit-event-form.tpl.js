@@ -60,7 +60,6 @@ const createEditEventFormTemplate = (point, allOffers) => {
         </label>
       </div>`;
     }).join('');
-
     return resultTemplate;
   };
   const availableOffrersTemplate = createAvailableOffrersTemplate(allOffers, type, offers);
