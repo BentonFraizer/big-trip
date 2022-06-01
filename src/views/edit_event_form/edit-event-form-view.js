@@ -47,36 +47,68 @@ export default class EditEventFormView extends AbstractStatefulView {
     this._callback.formSubmit(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
   };
 
+  //Метод для обработки смены точки маршрута с обновлением количества офферов для каждого типа
   #changeCurrentType = (evt) => {
     evt.preventDefault();
-    if (evt.target.innerHTML !== this._state.point.type) {
-      const newType = evt.target.innerHTML;
-      this.updateElement(
-        {
-          ...this._state.point.type = newType,
-          ...this._state.point.offers = [],
+    if (evt.target.tagName !== 'FIELDSET') {
+      if (evt.target.innerHTML !== this._state.point.type) {
+        const newType = evt.target.innerHTML;
+        this.updateElement({
+          point: {
+            ...this._state.point,
+            type: newType,
+            offers: []
+          },
+          offers: [...this._state.offers],
+        });
+      }
+    }
+  };
+
+  //Метод для обработки выбора дополнительных опций
+  #pickOffers = (evt) => {
+    if (evt.target.id.includes('event-offer')) {
+      const offerId = Number(evt.target.id.replace('event-offer-', ''));
+      let pickedOffers = this._state.point.offers;
+      if (pickedOffers.includes(offerId)) {
+        const refreshedOffers = pickedOffers.filter((offer) => offer !== offerId);
+        pickedOffers = refreshedOffers;
+      } else if (!(pickedOffers.includes(offerId))){
+        pickedOffers.push(offerId);
+      }
+
+      this.updateElement({
+        point: {
+          ...this._state.point,
+          offers: pickedOffers,
         },
-        {...this._state.offers}
-      );
-      // console.log('new', this._state);
+        offers: [...this._state.offers],
+      });
     }
   };
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('click', this.#changeCurrentType);
+
+    const offersElement = this.element.querySelector('.event__available-offers');
+    if (offersElement) {
+      offersElement.addEventListener('click', this.#pickOffers);
+    }
   };
 
   static parseDataToState = (pointData, offersData) => ({
     point: {
       ...pointData,
+      pickedOffers: pointData.offers,
     },
     offers: [...offersData],
   });
 
   static parseStateToData = (statePoint, stateOffers) => {
-    const point = {...statePoint};
+    const point = {...statePoint,};
     const offers = [...stateOffers];
 
+    delete point.pickedOffers;
     return {point, offers};
   };
 

@@ -46,7 +46,7 @@ export default class RoutePresenter {
   //На второй строке метода повторно инициализируется Point-презентер уже с новыми данными
   #handlePointChange = (updatedPoint) => {
     this.#listPoints = updateItem(this.#listPoints, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.#listPoints, this.#allOffers);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.#allOffers);
   };
 
   #sortPoints = (sortType) => {
