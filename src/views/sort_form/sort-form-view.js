@@ -12,8 +12,12 @@ export default class SortFormView extends AbstractView {
   };
 
   #sortTypeChangeHandler = (evt) => {
-    if (evt.target.tagName !== 'LABEL') {
+    if (!(evt.target.id === 'sort-day' || evt.target.id === 'sort-time' || evt.target.id === 'sort-price')) {
       return;
+    }
+
+    if (evt.target.id === 'sort-event' || evt.target.id === 'sort-offers') {
+      evt.preventDefault();
     }
 
     this._callback.sortTypeChange(evt.target.dataset.sortType);

@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-const createEditEventFormTemplate = (allPoints, allOffers) => {
-  const {basePrice, type, destination, dateFrom, dateTo, offers} = allPoints[0];
+const createEditEventFormTemplate = (point, allOffers) => {
+  const {basePrice, type, destination, dateFrom, dateTo, offers} = point;
 
   //Функция создания разметки для отрисовки картинок поля Destination
   const pictures = destination.pictures;
@@ -35,8 +35,8 @@ const createEditEventFormTemplate = (allPoints, allOffers) => {
   const createTypeCheckerTemplate = (typeOfEvent, allTypes) => {
     const typeItemsForFieldset = allTypes.map((currentType) =>
       `<div class="event__type-item">
-        <input id="event-type-${currentType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${currentType}" ${currentType === typeOfEvent ? 'checked' : ''}>
-        <label class="event__type-label  event__type-label--${currentType}" for="event-type-${currentType}-1">${currentType}</label>
+        <input id="event-type-${currentType}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${currentType}" ${currentType === typeOfEvent ? 'checked' : ''}>
+        <label class="event__type-label  event__type-label--${currentType}" for="event-type-${currentType}">${currentType}</label>
       </div>`
     ).join('');
 
@@ -52,15 +52,14 @@ const createEditEventFormTemplate = (allPoints, allOffers) => {
     const resultTemplate = pointWithCurrentType.offers.map((offer) => {
       const checkedOffer = pointOffers.includes(offer.id) ? 'checked' : '';
       return `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}-1" type="checkbox" name="event-offer-${offer.id}" ${checkedOffer}>
-        <label class="event__offer-label" for="event-offer-${offer.id}-1">
+        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checkedOffer}>
+        <label class="event__offer-label" for="event-offer-${offer.id}">
           <span class="event__offer-title">${offer.title}</span>
           +€&nbsp;
           <span class="event__offer-price">${offer.price}</span>
         </label>
       </div>`;
     }).join('');
-
     return resultTemplate;
   };
   const availableOffrersTemplate = createAvailableOffrersTemplate(allOffers, type, offers);
