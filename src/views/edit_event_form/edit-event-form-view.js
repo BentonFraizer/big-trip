@@ -39,6 +39,20 @@ export default class EditEventFormView extends AbstractStatefulView {
     return createEditEventFormTemplate(this._state.point, this._state.offers);
   }
 
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo){
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  };
+
   //Метод для сброса несохранённых данных. (Используется когда форма редактирования открыта и пользователь нажимает на Esc либо на кнопку закрытия задачи)
   reset = (pointData, offersData) => {
     this.updateElement(
@@ -98,7 +112,7 @@ export default class EditEventFormView extends AbstractStatefulView {
   //Метод для обработки смены точки маршрута с обновлением количества офферов для каждого типа
   #changeCurrentType = (evt) => {
     evt.preventDefault();
-    if (evt.target.tagName !== 'FIELDSET') {
+    if (evt.target.className.includes('event__type-label')) {
       if (evt.target.innerHTML !== this._state.point.type) {
         const newType = evt.target.innerHTML;
         this.updateElement({
