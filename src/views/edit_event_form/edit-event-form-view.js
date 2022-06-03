@@ -1,5 +1,9 @@
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import {createEditEventFormTemplate} from './edit-event-form.tpl';
+import flatpickr from 'flatpickr';
+import dayjs from 'dayjs';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 const EMPTY_POINT = {
   'id': null,
@@ -19,17 +23,35 @@ const EMPTY_POINT = {
 const EMPTY_OFFERS = [];
 
 export default class EditEventFormView extends AbstractStatefulView {
+  #datepickerFrom = null;
+  #datepickerTo = null;
   editable = true;
 
   constructor(point = EMPTY_POINT, offers = EMPTY_OFFERS) {
     super();
     this._state = EditEventFormView.parseDataToState(point, offers);
     this.#setInnerHandlers();
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
   }
 
   get template() {
     return createEditEventFormTemplate(this._state.point, this._state.offers);
   }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo){
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  };
 
   //Метод для сброса несохранённых данных. (Используется когда форма редактирования открыта и пользователь нажимает на Esc либо на кнопку закрытия задачи)
   reset = (pointData, offersData) => {
@@ -45,8 +67,21 @@ export default class EditEventFormView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setCloseEditFormClickHandler(this._callback.closeEditFormClick);
+  };
+
+  #changeBasePriceInputHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      point: {
+        ...this._state.point,
+        basePrice: evt.target.value,
+      },
+      offers: [...this._state.offers],
+    });
   };
 
   #formSubmitHandler = (evt) => {
@@ -54,10 +89,30 @@ export default class EditEventFormView extends AbstractStatefulView {
     this._callback.formSubmit(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
   };
 
+  #dateFromChangeHandler = ([userDateFrom]) => {
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        dateFrom: userDateFrom,
+      },
+      offers: [...this._state.offers],
+    });
+  };
+
+  #dateToChangeHandler = ([userDateTo]) => {
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        dateTo: userDateTo,
+      },
+      offers: [...this._state.offers],
+    });
+  };
+
   //Метод для обработки смены точки маршрута с обновлением количества офферов для каждого типа
   #changeCurrentType = (evt) => {
     evt.preventDefault();
-    if (evt.target.tagName !== 'FIELDSET') {
+    if (evt.target.className.includes('event__type-label')) {
       if (evt.target.innerHTML !== this._state.point.type) {
         const newType = evt.target.innerHTML;
         this.updateElement({
@@ -94,6 +149,35 @@ export default class EditEventFormView extends AbstractStatefulView {
     }
   };
 
+  #setDateFromPicker = () => {
+    if (dayjs(this._state.point.dateFrom).diff(this._state.point.dateTo) > 0) {
+      this._state.point.dateTo =this._state.point.dateFrom;
+    }
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        minDate: 'today',
+        defaultDate: this._state.point.dateFrom,
+        onClose: this.#dateFromChangeHandler, // На событие flatpickr передаётся колбэк
+      },
+    );
+  };
+
+  #setDateToPicker = () => {
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        minDate: this._state.point.dateFrom,
+        defaultDate: this._state.point.dateTo,
+        onClose: this.#dateToChangeHandler, // На событие flatpickr передаётся колбэк
+      },
+    );
+  };
+
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-group').addEventListener('click', this.#changeCurrentType);
 
@@ -101,12 +185,12 @@ export default class EditEventFormView extends AbstractStatefulView {
     if (offersElement) {
       offersElement.addEventListener('click', this.#pickOffers);
     }
+    this.element.querySelector('#event-price-1').addEventListener('input', this.#changeBasePriceInputHandler);
   };
 
   static parseDataToState = (pointData, offersData) => ({
     point: {
       ...pointData,
-      pickedOffers: pointData.offers,
     },
     offers: [...offersData],
   });
@@ -115,7 +199,6 @@ export default class EditEventFormView extends AbstractStatefulView {
     const point = {...statePoint,};
     const offers = [...stateOffers];
 
-    delete point.pickedOffers;
     return {point, offers};
   };
 
