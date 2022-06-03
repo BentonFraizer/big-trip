@@ -1,5 +1,9 @@
 import AbstractStatefulView from '../../framework/view/abstract-stateful-view';
 import {createEditEventFormTemplate} from './edit-event-form.tpl';
+import flatpickr from 'flatpickr';
+import dayjs from 'dayjs';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 const EMPTY_POINT = {
   'id': null,
@@ -19,12 +23,16 @@ const EMPTY_POINT = {
 const EMPTY_OFFERS = [];
 
 export default class EditEventFormView extends AbstractStatefulView {
+  #datepickerFrom = null;
+  #datepickerTo = null;
   editable = true;
 
   constructor(point = EMPTY_POINT, offers = EMPTY_OFFERS) {
     super();
     this._state = EditEventFormView.parseDataToState(point, offers);
     this.#setInnerHandlers();
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
   }
 
   get template() {
@@ -45,6 +53,8 @@ export default class EditEventFormView extends AbstractStatefulView {
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setCloseEditFormClickHandler(this._callback.closeEditFormClick);
   };
@@ -52,6 +62,26 @@ export default class EditEventFormView extends AbstractStatefulView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
+  };
+
+  #dateFromChangeHandler = ([userDateFrom]) => {
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        dateFrom: userDateFrom,
+      },
+      offers: [...this._state.offers],
+    });
+  };
+
+  #dateToChangeHandler = ([userDateTo]) => {
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        dateTo: userDateTo,
+      },
+      offers: [...this._state.offers],
+    });
   };
 
   //Метод для обработки смены точки маршрута с обновлением количества офферов для каждого типа
@@ -92,6 +122,35 @@ export default class EditEventFormView extends AbstractStatefulView {
         offers: [...this._state.offers],
       });
     }
+  };
+
+  #setDateFromPicker = () => {
+    if (dayjs(this._state.point.dateFrom).diff(this._state.point.dateTo) > 0) {
+      this._state.point.dateTo =this._state.point.dateFrom;
+    }
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        minDate: 'today',
+        defaultDate: this._state.point.dateFrom,
+        onClose: this.#dateFromChangeHandler, // На событие flatpickr передаётся колбэк
+      },
+    );
+  };
+
+  #setDateToPicker = () => {
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        minDate: this._state.point.dateFrom,
+        defaultDate: this._state.point.dateTo,
+        onClose: this.#dateToChangeHandler, // На событие flatpickr передаётся колбэк
+      },
+    );
   };
 
   #setInnerHandlers = () => {
