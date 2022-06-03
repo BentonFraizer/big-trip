@@ -59,6 +59,17 @@ export default class EditEventFormView extends AbstractStatefulView {
     this.setCloseEditFormClickHandler(this._callback.closeEditFormClick);
   };
 
+  #changeBasePriceInputHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      point: {
+        ...this._state.point,
+        basePrice: evt.target.value,
+      },
+      offers: [...this._state.offers],
+    });
+  };
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
@@ -160,12 +171,12 @@ export default class EditEventFormView extends AbstractStatefulView {
     if (offersElement) {
       offersElement.addEventListener('click', this.#pickOffers);
     }
+    this.element.querySelector('#event-price-1').addEventListener('input', this.#changeBasePriceInputHandler);
   };
 
   static parseDataToState = (pointData, offersData) => ({
     point: {
       ...pointData,
-      pickedOffers: pointData.offers,
     },
     offers: [...offersData],
   });
@@ -174,7 +185,6 @@ export default class EditEventFormView extends AbstractStatefulView {
     const point = {...statePoint,};
     const offers = [...stateOffers];
 
-    delete point.pickedOffers;
     return {point, offers};
   };
 
