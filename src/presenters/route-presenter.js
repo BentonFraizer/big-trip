@@ -4,7 +4,7 @@ import SortAndEventsContainerView from '../views/sort_and_events_container/sort-
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
 import {render} from '../framework/render';
 import PointPresenter from './point-presenter';
-import {SortType} from '../consts';
+import {SortType, UserAction, UpdateType} from '../consts';
 import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils';
 
 export default class RoutePresenter {
@@ -58,24 +58,40 @@ export default class RoutePresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  //Метод-обработчик для отслеживания обновления View (т.е. при внесении изменений пользователем в браузере)
+  //Метод-обработчик для отслеживания обновления View (т.е. при внесении изменений пользователем в браузере)// Здесь будем вызывать обновление модели.
+  // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+  // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+  // update - обновленные данные
   #handleViewAction = (actionType, updateType, update) => {
-    console.log('Изменения во View', actionType, updateType, update);
-    // Здесь будем вызывать обновление модели.
-    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
-    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
-    // update - обновленные данные
+    switch (actionType) {
+      case UserAction.UPDATE_POINT:
+        this.#pointsModel.updatePoint(updateType, update);
+        break;
+      case UserAction.ADD_POINT:
+        this.pointsModel.addPoint(updateType, update);
+        break;
+      case UserAction.DELETE_POINT:
+        this.pointsModel.deletePoint(updateType, update);
+        break;
+    }
   };
 
   //Метод-обработчик для отслеживания обновления данных в Model
   #handleModelEvent = (updateType, data) => {
-    console.log('Изменения в данных',updateType, data);
     // В зависимости от типа изменений решаем, что делать:
-    // - обновить часть списка (например, когда поменялась цена в точке маршрута)
-    // - обновить список (например, при удалении точки маршрута)
-    // - обновить всю доску (например, при переключении фильтра)
+    switch (updateType) {
+      case UpdateType.PATCH:
+        // - обновить часть списка (например, когда поменялась цена в точке маршрута)
+        this.#pointPresenters.get(data.id).init(data);
+        break;
+      case UpdateType.MINOR:
+        // - обновить список (например, при удалении точки маршрута)
+        break;
+      case UpdateType.MAJOR:
+        // - обновить всю доску (например, при переключении фильтра)
+        break;
+    }
   };
-
 
   //Метод для сортировки точек маршрута. Здесь по порядку выполняются: сортировка, очистка списка, рендеринг нового списка
   #handleSortTypeChange = (sortType) => {
