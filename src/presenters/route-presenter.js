@@ -24,6 +24,10 @@ export default class RoutePresenter {
     this.#pageBodyContainer = pageBodyContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
+
+    //Подпивываемся на событие (!пока не понятно на какое) в points-model.
+    //#handleModelEvent это обработчик-наблюдатель, который будет реагировать на изменения модели, т.е. будет вызван
+    this.#pointsModel.addObserver(this.#handleModelEvent);
   }
 
   //Метод (геттер) для получения данных о точке из модели PointsModel
@@ -54,13 +58,24 @@ export default class RoutePresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  //Метод-обработчик для отслеживания обновления данных в компоненте точки маршрута
-  //На второй строке метода повторно инициализируется Point-презентер уже с новыми данными
-  #handlePointChange = (updatedPoint) => {
-    //Здесь будем вызывать обновление модели
-
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.offers);
+  //Метод-обработчик для отслеживания обновления View (т.е. при внесении изменений пользователем в браузере)
+  #handleViewAction = (actionType, updateType, update) => {
+    console.log('Изменения во View', actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
   };
+
+  //Метод-обработчик для отслеживания обновления данных в Model
+  #handleModelEvent = (updateType, data) => {
+    console.log('Изменения в данных',updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялась цена в точке маршрута)
+    // - обновить список (например, при удалении точки маршрута)
+    // - обновить всю доску (например, при переключении фильтра)
+  };
+
 
   //Метод для сортировки точек маршрута. Здесь по порядку выполняются: сортировка, очистка списка, рендеринг нового списка
   #handleSortTypeChange = (sortType) => {
@@ -89,7 +104,7 @@ export default class RoutePresenter {
 
   //Метод отрисовки компонента точки маршрута
   #renderPoint (point, offers) {
-    const pointPresenter = new PointPresenter(this.#eventsListContainer.element, this.#handlePointChange, this.#handleModeChange);
+    const pointPresenter = new PointPresenter(this.#eventsListContainer.element, this.#handleViewAction, this.#handleModeChange);
     pointPresenter.init(point, offers);
     this.#pointPresenters.set(point.id, pointPresenter);
   }

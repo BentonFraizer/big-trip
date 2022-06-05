@@ -2,6 +2,7 @@ import EventView from '../views/event/event-view';
 import EditEventFormView from '../views/edit_event_form/edit-event-form-view';
 import {isEscKeyPressed} from '../utils';
 import {render, replace, remove} from '../framework/render';
+import {UserAction, UpdateType} from '../consts';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -96,10 +97,12 @@ export default class PointPresenter {
 
   //Обработка клика кнопки добавления в Избранное
   #handleFavoriteClick = () => {
-    this.#changeData({
-      ...this.#point,
-      isFavorite: !this.#point.isFavorite
-    });
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      //Возможно стоит поставить MINOR. Проверить позже.
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite},
+    );
   };
 
   //Замена точки маршрута на форму по клику на кнопку в виде галочки
@@ -115,11 +118,11 @@ export default class PointPresenter {
 
   //Замена формы на точку маршрута по клику на кнопку "Save"
   #handleFormSubmit = (pointAndOffersData) => {
-    this.#changeData({
-      ...pointAndOffersData.point,
-    },{
-      ...pointAndOffersData.offers,
-    });
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      {...pointAndOffersData.point,},
+      {...pointAndOffersData.offers,});
     this.#replaceFormToPoint();
   };
 }
