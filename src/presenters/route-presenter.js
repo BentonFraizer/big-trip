@@ -4,7 +4,6 @@ import SortAndEventsContainerView from '../views/sort_and_events_container/sort-
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
 import {render} from '../framework/render';
 import PointPresenter from './point-presenter';
-import {updateItem} from '../utils';
 import {SortType} from '../consts';
 import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils';
 
@@ -18,8 +17,6 @@ export default class RoutePresenter {
   #sortComponent = new SortFormView();                        // form    class="trip-events__trip-sort  trip-sort"
   #noPoinstComponent = new EventsListEmptyView();             // p       class="trip-events__msg">
 
-  #listPoints = [];
-  #allOffers = [];
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
 
@@ -31,6 +28,15 @@ export default class RoutePresenter {
 
   //Метод (геттер) для получения данных о точке из модели PointsModel
   get points() {
+    switch (this.#currentSortType) {
+      case SortType.TIME:
+        return [...this.#pointsModel.points].sort(sortTimeDown);
+      case SortType.PRICE:
+        return [...this.#pointsModel.points].sort(sortPriceDown);
+      case SortType.DAY:
+        return [...this.#pointsModel.points].sort(sortDateDown);
+    }
+
     return this.#pointsModel.points;
   }
 
@@ -40,10 +46,6 @@ export default class RoutePresenter {
   }
 
   init () {
-    this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js.
-    this.#allOffers = [...this.#offersModel.offers];  //массив вообще всех офферов
-    this.#sortPoints();
-
     this.#renderSortAndEventsBoard();
   }
 
@@ -55,23 +57,9 @@ export default class RoutePresenter {
   //Метод-обработчик для отслеживания обновления данных в компоненте точки маршрута
   //На второй строке метода повторно инициализируется Point-презентер уже с новыми данными
   #handlePointChange = (updatedPoint) => {
-    this.#listPoints = updateItem(this.#listPoints, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.#allOffers);
-  };
+    //Здесь будем вызывать обновление модели
 
-  #sortPoints = (sortType) => {
-    switch (sortType) {
-      case SortType.TIME:
-        this.#listPoints.sort(sortTimeDown);
-        break;
-      case SortType.PRICE:
-        this.#listPoints.sort(sortPriceDown);
-        break;
-      default:
-        this.#listPoints.sort(sortDateDown);
-    }
-
-    this.#currentSortType = sortType;
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.offers);
   };
 
   //Метод для сортировки точек маршрута. Здесь по порядку выполняются: сортировка, очистка списка, рендеринг нового списка
@@ -81,7 +69,7 @@ export default class RoutePresenter {
     }
 
     // - Сортируем задачи
-    this.#sortPoints(sortType);
+    this.#currentSortType = sortType;
     // - Очищаем список
     this.#clearPoints();
     // - Рендерим список заново
@@ -114,8 +102,8 @@ export default class RoutePresenter {
 
   //Метод отрисовки всех точек маршрута
   #renderPoints () {
-    this.#listPoints.forEach((element, index) => {
-      this.#renderPoint(this.#listPoints[index], this.#allOffers);
+    this.points.forEach((element, index) => {
+      this.#renderPoint(this.points[index], this.offers);
     });
   }
 
@@ -130,7 +118,7 @@ export default class RoutePresenter {
     this.#renderSort();
     this.#renderPointsOrInfoContainer();
 
-    if (!this.#listPoints.length) {
+    if (!this.points.length) {
       this.#renderNoPoints();
       return;
     }
