@@ -29,6 +29,16 @@ export default class RoutePresenter {
     this.#offersModel = offersModel;
   }
 
+  //Метод (геттер) для получения данных о точке из модели PointsModel
+  get points() {
+    return this.#pointsModel.points;
+  }
+
+  //Метод (геттер) для получения данных о дополнительных предложениях из модели OffersModel
+  get offers() {
+    return this.#offersModel.offers;
+  }
+
   init () {
     this.#listPoints = [...this.#pointsModel.points]; //количество точек событий из points-model.js.
     this.#allOffers = [...this.#offersModel.offers];  //массив вообще всех офферов
