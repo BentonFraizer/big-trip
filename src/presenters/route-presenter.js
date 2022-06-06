@@ -2,7 +2,7 @@ import EventsListView from '../views/events_list/events-list-view';
 import SortFormView from '../views/sort_form/sort-form-view';
 import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view';
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
-import {render} from '../framework/render';
+import {remove, render} from '../framework/render';
 import PointPresenter from './point-presenter';
 import {SortType, UserAction, UpdateType} from '../consts';
 import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils';
@@ -14,7 +14,7 @@ export default class RoutePresenter {
 
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
   #eventsListContainer = new EventsListView();                // ul      class="trip-events__list"
-  #sortComponent = new SortFormView();                        // form    class="trip-events__trip-sort  trip-sort"
+  #sortComponent = null;                                      // form    class="trip-events__trip-sort  trip-sort"
   #noPoinstComponent = new EventsListEmptyView();             // p       class="trip-events__msg">
 
   #pointPresenters = new Map();
@@ -81,14 +81,18 @@ export default class RoutePresenter {
     // В зависимости от типа изменений решаем, что делать:
     switch (updateType) {
       case UpdateType.PATCH:
-        // - обновить часть списка (например, когда поменялась цена в точке маршрута)
-        this.#pointPresenters.get(data.id).init(data);
+        // - обновить часть списка (например, когда точка маршрута попадает в избранное)
+        this.#pointPresenters.get(data.id).init(data, this.offers);
         break;
       case UpdateType.MINOR:
         // - обновить список (например, при удалении точки маршрута)
+        this.#clearSortAndEventsBoard();
+        this.#renderSortAndEventsBoard();
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
+        this.#clearSortAndEventsBoard({resetSortType: true});
+        this.#renderSortAndEventsBoard();
         break;
     }
   };
@@ -102,15 +106,16 @@ export default class RoutePresenter {
     // - Сортируем задачи
     this.#currentSortType = sortType;
     // - Очищаем список
-    this.#clearPoints();
+    this.#clearSortAndEventsBoard();
     // - Рендерим список заново
-    this.#renderPoints();
+    this.#renderSortAndEventsBoard();
   };
 
   //Метод отрисовки компонента сортировки
   #renderSort () {
-    render(this.#sortComponent, this.#sortAndEventsContainer.element);
+    this.#sortComponent = new SortFormView(this.#currentSortType);
     this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
+    render(this.#sortComponent, this.#sortAndEventsContainer.element);
   }
 
   //Метод отрисовки компонента списка <ul>, в который будут попадать либо точки маршрута либо информационные сообщения как элементы списка
@@ -143,6 +148,19 @@ export default class RoutePresenter {
     render(this.#noPoinstComponent, this.#sortAndEventsContainer.element);
   }
 
+  //Метод для очистки представления (доски) с компонентами сортировки, точек маршрута, информационных сообщений
+  #clearSortAndEventsBoard = ({resetSortType = false} = {}) => {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+
+    remove(this.#sortComponent);
+    remove(this.#noPoinstComponent);
+
+    if (resetSortType) {
+      this.#currentSortType = SortType.DAY;
+    }
+  };
+
   //Метод отрисовки представления (доски) с компонентами сортировки, точек маршрута, информационных сообщений
   #renderSortAndEventsBoard () {
     render(this.#sortAndEventsContainer, this.#pageBodyContainer);
@@ -154,6 +172,8 @@ export default class RoutePresenter {
       return;
     }
 
-    this.#renderPoints();
+    this.points.forEach((element, index) => {
+      this.#renderPoint(this.points[index], this.offers);
+    });
   }
 }

@@ -2,8 +2,15 @@ import AbstractView from '../../framework/view/abstract-view';
 import {createSortFormTemplate} from './sort-form.tpl';
 
 export default class SortFormView extends AbstractView {
+  #currentSortType = null;
+
+  constructor(currentSortType) {
+    super();
+    this.#currentSortType = currentSortType;
+  }
+
   get template() {
-    return createSortFormTemplate();
+    return createSortFormTemplate(this.#currentSortType);
   }
 
   setSortTypeChangeHandler = (callback) => {
