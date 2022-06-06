@@ -77,4 +77,16 @@ const sortTimeDown = (pointA, pointB) => getWeightForTime(pointA.dateFrom, point
 //Функция для сортировки точек по полю "DAY"
 const sortDateDown = (pointA, pointB) => getWeightForDate(pointA.dateFrom, pointB.dateFrom);
 
-export {getRandomInteger, humanizeDateMonthDay, isEscKeyPressed, sortPriceDown, sortTimeDown, sortDateDown};
+//Функция для проверки равны ли две даты (т.е. совпадает ли дата)
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+
+//Функция проверки на равенство двух чисел (поле PRICE)
+const isPricesEqual = (priceOne, priceTwo) => {
+  if (Number(priceOne) === Number(priceTwo)) {
+    return true;
+  }
+
+  return false;
+};
+
+export {getRandomInteger, humanizeDateMonthDay, isEscKeyPressed, sortPriceDown, sortTimeDown, sortDateDown, isDatesEqual, isPricesEqual};

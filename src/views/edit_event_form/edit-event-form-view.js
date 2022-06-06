@@ -65,12 +65,18 @@ export default class EditEventFormView extends AbstractStatefulView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
+  setDeleteClickHandler (callback) {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteClickHandler);
+  }
+
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.#setDateFromPicker();
     this.#setDateToPicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setCloseEditFormClickHandler(this._callback.closeEditFormClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   };
 
   #changeBasePriceInputHandler = (evt) => {
@@ -186,6 +192,11 @@ export default class EditEventFormView extends AbstractStatefulView {
       offersElement.addEventListener('click', this.#pickOffers);
     }
     this.element.querySelector('#event-price-1').addEventListener('input', this.#changeBasePriceInputHandler);
+  };
+
+  #pointDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
   };
 
   static parseDataToState = (pointData, offersData) => ({

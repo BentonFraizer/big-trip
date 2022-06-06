@@ -1,6 +1,6 @@
 import EventView from '../views/event/event-view';
 import EditEventFormView from '../views/edit_event_form/edit-event-form-view';
-import {isEscKeyPressed} from '../utils';
+import {isEscKeyPressed, isDatesEqual, isPricesEqual} from '../utils';
 import {render, replace, remove} from '../framework/render';
 import {UserAction, UpdateType} from '../consts';
 
@@ -42,6 +42,7 @@ export default class PointPresenter {
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#editPointFormComponent.setCloseEditFormClickHandler(this.#handleCloseEditFormClick);
     this.#editPointFormComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#editPointFormComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     //Если значения в переменных равны null, значит рендер точки маршрута выполняется впервые. Просто рендерим компонент точки маршрута
     if (prevPointComponent === null || prevEditPointFormComponent === null) {
@@ -116,13 +117,31 @@ export default class PointPresenter {
     this.#replaceFormToPoint();
   };
 
-  //Замена формы на точку маршрута по клику на кнопку "Save"
-  #handleFormSubmit = (pointAndOffersData) => {
+  //Замена формы на точку маршрута и обновление данных по клику на кнопку "Save"
+  //В "update" попадают данные, изменённые пользователем в форме редактирования. Параметр ранее: "pointAndOffersData"
+  #handleFormSubmit = (update) => {
+    //Проверка. Поменялись ли в точке маршрута данные, которые попадают под сортировку (day, time, price)
+    //Если да - обновляем список (MINOR), если нет обновляем только точку (PATCH)
+    const isMinorUpdate =
+      !isDatesEqual(this.#point.dateFrom, update.point.dateFrom) ||
+      !isPricesEqual(this.#point.basePrice, update.point.basePrice) ||
+      (this.#point.dateFrom === update.point.dateFrom && this.#point.dateTo === update.point.dateTo);
+
     this.#changeData(
       UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      {...update.point,},
+      {...update.offers,});
+    this.#replaceFormToPoint();
+  };
+
+  //Удаление точки маршрута
+  #handleDeleteClick = (pointAndOffersData) => {
+    this.#changeData(
+      UserAction.DELETE_POINT,
       UpdateType.MINOR,
       {...pointAndOffersData.point,},
-      {...pointAndOffersData.offers,});
-    this.#replaceFormToPoint();
+      {...pointAndOffersData.offers,},
+    );
   };
 }

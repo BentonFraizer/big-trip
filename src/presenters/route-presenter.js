@@ -68,10 +68,10 @@ export default class RoutePresenter {
         this.#pointsModel.updatePoint(updateType, update);
         break;
       case UserAction.ADD_POINT:
-        this.pointsModel.addPoint(updateType, update);
+        this.#pointsModel.addPoint(updateType, update);
         break;
       case UserAction.DELETE_POINT:
-        this.pointsModel.deletePoint(updateType, update);
+        this.#pointsModel.deletePoint(updateType, update);
         break;
     }
   };
@@ -128,19 +128,6 @@ export default class RoutePresenter {
     const pointPresenter = new PointPresenter(this.#eventsListContainer.element, this.#handleViewAction, this.#handleModeChange);
     pointPresenter.init(point, offers);
     this.#pointPresenters.set(point.id, pointPresenter);
-  }
-
-  //Метод очистки всех точек маршрута созданных из класса PointPresenter и помещенных в Map #pointPresenters
-  #clearPoints () {
-    this.#pointPresenters.forEach((presenter) => presenter.destroy());
-    this.#pointPresenters.clear();
-  }
-
-  //Метод отрисовки всех точек маршрута
-  #renderPoints () {
-    this.points.forEach((element, index) => {
-      this.#renderPoint(this.points[index], this.offers);
-    });
   }
 
   //Метод отрисовки компонента информационного сообщения об отсутствии точек маршрута
