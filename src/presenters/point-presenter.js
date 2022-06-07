@@ -1,6 +1,6 @@
 import EventView from '../views/event/event-view';
 import EditEventFormView from '../views/edit_event_form/edit-event-form-view';
-import {isEscKeyPressed, isDatesEqual, isPricesEqual} from '../utils';
+import {isEscKeyPressed, isDatesEqual, isPricesEqual} from '../utils/utils';
 import {render, replace, remove} from '../framework/render';
 import {UserAction, UpdateType} from '../consts';
 

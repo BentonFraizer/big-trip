@@ -1,5 +1,5 @@
 import {nanoid} from 'nanoid';
-import {getRandomInteger} from '../utils';
+import {getRandomInteger} from '../utils/utils';
 import dayjs from 'dayjs';
 
 const MAX_DAYS = 7;

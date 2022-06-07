@@ -5,7 +5,7 @@ import EventsListEmptyView from '../views/events_list_empty/events-list-empty-vi
 import {remove, render} from '../framework/render';
 import PointPresenter from './point-presenter';
 import {SortType, UserAction, UpdateType} from '../consts';
-import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils';
+import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils/utils';
 
 export default class RoutePresenter {
   #pageBodyContainer = null;
