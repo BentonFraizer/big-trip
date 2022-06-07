@@ -4,6 +4,7 @@ import SortAndEventsContainerView from '../views/sort_and_events_container/sort-
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
 import {remove, render} from '../framework/render';
 import PointPresenter from './point-presenter';
+import {filter} from '../utils/filter';
 import {SortType, UserAction, UpdateType} from '../consts';
 import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils/utils';
 
@@ -11,6 +12,7 @@ export default class RoutePresenter {
   #pageBodyContainer = null;
   #pointsModel = null;
   #offersModel = null;
+  #filterModel = null;
 
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
   #eventsListContainer = new EventsListView();                // ul      class="trip-events__list"
@@ -20,28 +22,33 @@ export default class RoutePresenter {
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
 
-  constructor(pageBodyContainer, pointsModel, offersModel) {
+  constructor(pageBodyContainer, pointsModel, offersModel, filterModel) {
     this.#pageBodyContainer = pageBodyContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
+    this.#filterModel = filterModel;
 
-    //Подпивываемся на событие (!пока не понятно на какое) в points-model.
-    //#handleModelEvent это обработчик-наблюдатель, который будет реагировать на изменения модели, т.е. будет вызван
+    //#handleModelEvent это обработчик-наблюдатель, который будет реагировать на изменения в каждой модели, т.е. будет вызван
     this.#pointsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   //Метод (геттер) для получения данных о точке из модели PointsModel
   get points() {
+    const filterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[filterType](points);
+
     switch (this.#currentSortType) {
       case SortType.TIME:
-        return [...this.#pointsModel.points].sort(sortTimeDown);
+        return filteredPoints.sort(sortTimeDown);
       case SortType.PRICE:
-        return [...this.#pointsModel.points].sort(sortPriceDown);
+        return filteredPoints.sort(sortPriceDown);
       case SortType.DAY:
-        return [...this.#pointsModel.points].sort(sortDateDown);
+        return filteredPoints.sort(sortDateDown);
     }
 
-    return this.#pointsModel.points;
+    return filteredPoints;
   }
 
   //Метод (геттер) для получения данных о дополнительных предложениях из модели OffersModel
@@ -94,6 +101,8 @@ export default class RoutePresenter {
         this.#clearSortAndEventsBoard({resetSortType: true});
         this.#renderSortAndEventsBoard();
         break;
+      default:
+        throw new Error ('The transferred update type does not exist');
     }
   };
 

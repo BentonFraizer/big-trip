@@ -17,7 +17,7 @@ const pageBodyContainerElement = document.querySelector('main .page-body__contai
 const pointsModel = new PointsModel(POINTS_AMOUNT, getPoint);
 const offersModel = new OffersModel(getOffers());
 const filterModel = new FilterModel();
-const routePresenter = new RoutePresenter(pageBodyContainerElement, pointsModel, offersModel);
+const routePresenter = new RoutePresenter(pageBodyContainerElement, pointsModel, offersModel, filterModel);
 const filterPresenter = new FilterPresenter(tripMainElement, filterModel, pointsModel);
 
 render(new TripInfoView(), tripMainElement);
