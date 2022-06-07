@@ -5,7 +5,7 @@ import EventsListEmptyView from '../views/events_list_empty/events-list-empty-vi
 import {remove, render} from '../framework/render';
 import PointPresenter from './point-presenter';
 import {filter} from '../utils/filter';
-import {SortType, UserAction, UpdateType} from '../consts';
+import {SortType, UserAction, UpdateType, FilterType} from '../consts';
 import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils/utils';
 
 export default class RoutePresenter {
@@ -17,10 +17,11 @@ export default class RoutePresenter {
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
   #eventsListContainer = new EventsListView();                // ul      class="trip-events__list"
   #sortComponent = null;                                      // form    class="trip-events__trip-sort  trip-sort"
-  #noPoinstComponent = new EventsListEmptyView();             // p       class="trip-events__msg">
+  #noPoinstComponent = null;                                  // p       class="trip-events__msg">
 
   #pointPresenters = new Map();
   #currentSortType = SortType.DAY;
+  #filterType = FilterType.EVERYTHING;
 
   constructor(pageBodyContainer, pointsModel, offersModel, filterModel) {
     this.#pageBodyContainer = pageBodyContainer;
@@ -35,9 +36,9 @@ export default class RoutePresenter {
 
   //Метод (геттер) для получения данных о точке из модели PointsModel
   get points() {
-    const filterType = this.#filterModel.filter;
+    this.#filterType = this.#filterModel.filter;
     const points = this.#pointsModel.points;
-    const filteredPoints = filter[filterType](points);
+    const filteredPoints = filter[this.#filterType](points);
 
     switch (this.#currentSortType) {
       case SortType.TIME:
@@ -141,6 +142,7 @@ export default class RoutePresenter {
 
   //Метод отрисовки компонента информационного сообщения об отсутствии точек маршрута
   #renderNoPoints () {
+    this.#noPoinstComponent = new EventsListEmptyView(this.#filterType);
     render(this.#noPoinstComponent, this.#sortAndEventsContainer.element);
   }
 
@@ -150,7 +152,10 @@ export default class RoutePresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
-    remove(this.#noPoinstComponent);
+
+    if (this.#noPoinstComponent) {
+      remove(this.#noPoinstComponent);
+    }
 
     if (resetSortType) {
       this.#currentSortType = SortType.DAY;
