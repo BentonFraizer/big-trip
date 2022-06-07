@@ -3,6 +3,7 @@ import RoutePresenter from './presenters/route-presenter';
 import {render} from './framework/render';
 import PointsModel from './models/points-model';
 import OffersModel from './models/offers-model';
+import FilterModel from './models/filter-model';
 import {getOffers} from './mock/offers';
 import {getPoint} from './mock/point';
 import TripInfoView from './views/trip_info/trip-info-view';
@@ -15,6 +16,7 @@ const pageBodyContainerElement = document.querySelector('main .page-body__contai
 
 const pointsModel = new PointsModel(POINTS_AMOUNT, getPoint);
 const offersModel = new OffersModel(getOffers());
+const filterModel = new FilterModel();
 const routePresenter = new RoutePresenter(pageBodyContainerElement, pointsModel, offersModel);
 
 render(new TripInfoView(), tripMainElement);
