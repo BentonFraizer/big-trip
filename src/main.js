@@ -11,6 +11,14 @@ import NewEventButtonView from './views/new_event_button/new-event-button-view';
 
 const POINTS_AMOUNT = 3;
 
+const filters = [
+  {
+    type: 'everything',
+    name: 'EVERYTHING',
+    count: 0,
+  },
+];
+
 const tripMainElement = document.querySelector('.trip-main');
 const pageBodyContainerElement = document.querySelector('main .page-body__container');
 
@@ -20,7 +28,7 @@ const filterModel = new FilterModel();
 const routePresenter = new RoutePresenter(pageBodyContainerElement, pointsModel, offersModel);
 
 render(new TripInfoView(), tripMainElement);
-render(new FiltersFormView(), tripMainElement);
+render(new FiltersFormView(filters, 'everything'), tripMainElement);
 render(new NewEventButtonView(), tripMainElement);
 
 routePresenter.init();
