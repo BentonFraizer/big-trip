@@ -670,6 +670,14 @@ main {
     text-align: center; }
   .event__input--price {
     width: 66px; }
+    .event__input--price::-webkit-outer-spin-button,
+    .event__input--price::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0; }
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
 
 .event__save-btn {
   margin-right: 18px; }

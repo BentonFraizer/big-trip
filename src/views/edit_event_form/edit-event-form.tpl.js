@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
 import {getOffers} from '../../mock/offers';
+import he from 'he';
+
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const createEditEventFormTemplate = (point, allOffers) => {
   const {basePrice, type, destination, dateFrom, dateTo, offers, id} = point;
@@ -148,7 +150,7 @@ const createEditEventFormTemplate = (point, allOffers) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination.name)}" list="destination-list-1">
             <datalist id="destination-list-1">
               <option value="Amsterdam"></option>
               <option value="Geneva"></option>
@@ -169,7 +171,7 @@ const createEditEventFormTemplate = (point, allOffers) => {
               <span class="visually-hidden">Price</span>
               €
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${he.encode(basePrice)}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
