@@ -1,7 +1,11 @@
 import dayjs from 'dayjs';
+import {getOffers} from '../../mock/offers';
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const createEditEventFormTemplate = (point, allOffers) => {
-  const {basePrice, type, destination, dateFrom, dateTo, offers} = point;
+  const {basePrice, type, destination, dateFrom, dateTo, offers, id} = point;
+  if (allOffers.length === 0) {
+    allOffers = null;
+  }
 
   //Функция создания разметки для отрисовки картинок поля Destination
   const pictures = destination.pictures;
@@ -23,7 +27,7 @@ const createEditEventFormTemplate = (point, allOffers) => {
   const picturesForDestinationTemplate = createPicturesForDestinationTemplate(pictures);
 
   //Функция создания разметки для отрисовки всей секции Description
-  const destinationSectionTemplate = destination.description !== undefined
+  const destinationSectionTemplate = destination.description !== null
     ? `<section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${destination.description}</p>
@@ -33,41 +37,81 @@ const createEditEventFormTemplate = (point, allOffers) => {
 
   //Функция создания разметки элемента выбора типа события, выпадающего списка и установка отметки на выбранном типе события
   const createTypeCheckerTemplate = (typeOfEvent, allTypes) => {
-    const typeItemsForFieldset = allTypes.map((currentType) =>
-      `<div class="event__type-item">
-        <input id="event-type-${currentType}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${currentType}" ${currentType === typeOfEvent ? 'checked' : ''}>
-        <label class="event__type-label  event__type-label--${currentType}" for="event-type-${currentType}">${currentType}</label>
-      </div>`
-    ).join('');
-
-    return typeItemsForFieldset;
+    if (typeOfEvent !== null) {
+      const typeItemsForFieldset = allTypes.map((currentType) =>
+        `<div class="event__type-item">
+          <input id="event-type-${currentType}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${currentType}" ${currentType === typeOfEvent ? 'checked' : ''}>
+          <label class="event__type-label  event__type-label--${currentType}" for="event-type-${currentType}">${currentType}</label>
+        </div>`
+      ).join('');
+      return typeItemsForFieldset;
+    } else {
+      const typeItemsForFieldset = allTypes.map((currentType) =>
+        `<div class="event__type-item">
+          <input id="event-type-${currentType}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${currentType}" ${currentType === 'taxi' ? 'checked' : ''}>
+          <label class="event__type-label  event__type-label--${currentType}" for="event-type-${currentType}">${currentType}</label>
+        </div>`
+      ).join('');
+      return typeItemsForFieldset;
+    }
   };
   const typeCheckerTemplate = createTypeCheckerTemplate(type, TYPES);
 
   //Функция создания разметки всех возможных офферов для текущего типа события
   const createAvailableOffrersTemplate = (allAvailableOffrers, currentType, pointOffers) => {
-    //Находим объект, совпадающий по типу с текущим типом события и массивом всех доступных предложений к данному типу события
-    const pointWithCurrentType = allAvailableOffrers.find((currentOffer) => currentType === currentOffer.type);
-    //Формирование шаблона всех доступных дополнительных функций по полученным данным. Выставление checked совпавшим по id опциям
-    const resultTemplate = pointWithCurrentType.offers.map((offer) => {
-      const checkedOffer = pointOffers.includes(offer.id) ? 'checked' : '';
-      return `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checkedOffer}>
-        <label class="event__offer-label" for="event-offer-${offer.id}">
-          <span class="event__offer-title">${offer.title}</span>
-          +€&nbsp;
-          <span class="event__offer-price">${offer.price}</span>
-        </label>
-      </div>`;
-    }).join('');
-    return resultTemplate;
+    if (allAvailableOffrers !== null) {
+      //Находим объект, совпадающий по типу с текущим типом события и массивом всех доступных предложений к данному типу события
+      const pointWithCurrentType = allAvailableOffrers.find((currentOffer) => currentType === currentOffer.type);
+      //Формирование шаблона всех доступных дополнительных функций по полученным данным. Выставление checked совпавшим по id опциям
+      const resultTemplate = pointWithCurrentType.offers.map((offer) => {
+        const checkedOffer = pointOffers.includes(offer.id) ? 'checked' : '';
+        return `<div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checkedOffer}>
+          <label class="event__offer-label" for="event-offer-${offer.id}">
+            <span class="event__offer-title">${offer.title}</span>
+            +€&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+          </label>
+        </div>`;
+      }).join('');
+      return resultTemplate;
+    } else {
+      allAvailableOffrers = getOffers();
+      const pointWithCurrentType = allAvailableOffrers.find((currentOffer) => currentType === currentOffer.type);
+      const resultTemplate = pointWithCurrentType.offers.map((offer) => {
+        const checkedOffer = pointOffers.includes(offer.id) ? 'checked' : '';
+        return `<div class="event__offer-selector">
+          <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}" ${checkedOffer}>
+          <label class="event__offer-label" for="event-offer-${offer.id}">
+            <span class="event__offer-title">${offer.title}</span>
+            +€&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+          </label>
+        </div>`;
+      }).join('');
+      return resultTemplate;
+    }
   };
   const availableOffrersTemplate = createAvailableOffrersTemplate(allOffers, type, offers);
 
   //Функция создания разметки всей секции с дополнительными опциями
   const createAvailableOffrersSectionTemplate = (allAvailableOffrers, currentType, templateWithOffers) => {
-    const pointWithCurrentType = allAvailableOffrers.find((currentOffer) => currentType === currentOffer.type);
-    if (pointWithCurrentType.offers.length !== 0){
+    if (allAvailableOffrers !== null) {
+      const pointWithCurrentType = allAvailableOffrers.find((currentOffer) => currentType === currentOffer.type);
+      if (pointWithCurrentType.offers.length !== 0){
+        return `
+        <section class="event__section  event__section--offers">
+          <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+          <div class="event__available-offers">
+            ${templateWithOffers}
+          </div>
+        </section>
+        `;
+      } else {
+        return '';
+      }
+    } else {
       return `
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -77,8 +121,6 @@ const createEditEventFormTemplate = (point, allOffers) => {
         </div>
       </section>
       `;
-    } else {
-      return '';
     }
   };
   const availableOffrersSectionTemplate = createAvailableOffrersSectionTemplate(allOffers, type, availableOffrersTemplate);
@@ -131,8 +173,8 @@ const createEditEventFormTemplate = (point, allOffers) => {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
-          <button class="event__rollup-btn" type="button">
+          <button class="event__reset-btn" type="reset">${id === undefined ? 'Cancel' : 'Delete' }</button>
+          <button class="event__rollup-btn" type="button" style="display:${id === undefined ? ' none' : ' block' }">
             <span class="visually-hidden">Open event</span>
           </button>
         </header>

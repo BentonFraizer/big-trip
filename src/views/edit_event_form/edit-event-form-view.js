@@ -6,16 +6,15 @@ import dayjs from 'dayjs';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const EMPTY_POINT = {
-  'id': null,
-  'type': '',
-  'dateFrom': '',
-  'dateTo': '',
+  'type': 'taxi',
+  'dateFrom': dayjs().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+  'dateTo': dayjs().add(1, 'd').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
   'destination': {
     'name': '',
-    'description': '',
+    'description': null,
     'pictures': [],
   },
-  'basePrice': null,
+  'basePrice': 0,
   'isFavorite': false,
   'offers': [],
 };
@@ -25,7 +24,6 @@ const EMPTY_OFFERS = [];
 export default class EditEventFormView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
-  editable = true;
 
   constructor(point = EMPTY_POINT, offers = EMPTY_OFFERS) {
     super();

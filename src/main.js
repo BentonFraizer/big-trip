@@ -19,9 +19,20 @@ const offersModel = new OffersModel(getOffers());
 const filterModel = new FilterModel();
 const routePresenter = new RoutePresenter(pageBodyContainerElement, pointsModel, offersModel, filterModel);
 const filterPresenter = new FilterPresenter(tripMainElement, filterModel, pointsModel);
+const newPointButtonComponent = new NewEventButtonView();
+
+const handleNewPointFormClose = () => {
+  newPointButtonComponent.element.disabled = false;
+};
+
+const handleNewPointButtonClick = () => {
+  routePresenter.createPoint(handleNewPointFormClose);
+  newPointButtonComponent.element.disabled = true;
+};
 
 render(new TripInfoView(), tripMainElement);
 filterPresenter.init();
-render(new NewEventButtonView(), tripMainElement);
+render(newPointButtonComponent, tripMainElement);
+newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
 
 routePresenter.init();

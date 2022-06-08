@@ -4,6 +4,7 @@ import SortAndEventsContainerView from '../views/sort_and_events_container/sort-
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
 import {remove, render} from '../framework/render';
 import PointPresenter from './point-presenter';
+import PointNewPresenter from './point-new-presenter';
 import {filter} from '../utils/filter';
 import {SortType, UserAction, UpdateType, FilterType} from '../consts';
 import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils/utils';
@@ -20,6 +21,7 @@ export default class RoutePresenter {
   #noPoinstComponent = null;                                  // p       class="trip-events__msg">
 
   #pointPresenters = new Map();
+  #pointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
 
@@ -28,6 +30,8 @@ export default class RoutePresenter {
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
+
+    this.#pointNewPresenter = new PointNewPresenter (this.#eventsListContainer.element, this.#handleViewAction);
 
     //#handleModelEvent это обработчик-наблюдатель, который будет реагировать на изменения в каждой модели, т.е. будет вызван
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -61,8 +65,15 @@ export default class RoutePresenter {
     this.#renderSortAndEventsBoard();
   }
 
+  createPoint = (callback) => {
+    this.#currentSortType = SortType.DAY;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#pointNewPresenter.init(callback);
+  };
+
   //Метод-обработчик для "сворачивания" всех форм
   #handleModeChange = () => {
+    this.#pointNewPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
@@ -148,6 +159,7 @@ export default class RoutePresenter {
 
   //Метод для очистки представления (доски) с компонентами сортировки, точек маршрута, информационных сообщений
   #clearSortAndEventsBoard = ({resetSortType = false} = {}) => {
+    this.#pointNewPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
 
