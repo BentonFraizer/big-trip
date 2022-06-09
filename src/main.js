@@ -1,8 +1,9 @@
-import FiltersFormView from './views/filters_form/filters-form-view';
 import RoutePresenter from './presenters/route-presenter';
+import FilterPresenter from './presenters/filter-presenter';
 import {render} from './framework/render';
 import PointsModel from './models/points-model';
 import OffersModel from './models/offers-model';
+import FilterModel from './models/filter-model';
 import {getOffers} from './mock/offers';
 import {getPoint} from './mock/point';
 import TripInfoView from './views/trip_info/trip-info-view';
@@ -15,10 +16,23 @@ const pageBodyContainerElement = document.querySelector('main .page-body__contai
 
 const pointsModel = new PointsModel(POINTS_AMOUNT, getPoint);
 const offersModel = new OffersModel(getOffers());
-const routePresenter = new RoutePresenter(pageBodyContainerElement, pointsModel, offersModel);
+const filterModel = new FilterModel();
+const routePresenter = new RoutePresenter(pageBodyContainerElement, pointsModel, offersModel, filterModel);
+const filterPresenter = new FilterPresenter(tripMainElement, filterModel, pointsModel);
+const newPointButtonComponent = new NewEventButtonView();
+
+const handleNewPointFormClose = () => {
+  newPointButtonComponent.element.disabled = false;
+};
+
+const handleNewPointButtonClick = () => {
+  routePresenter.createPoint(handleNewPointFormClose);
+  newPointButtonComponent.element.disabled = true;
+};
 
 render(new TripInfoView(), tripMainElement);
-render(new FiltersFormView(), tripMainElement);
-render(new NewEventButtonView(), tripMainElement);
+filterPresenter.init();
+render(newPointButtonComponent, tripMainElement);
+newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
 
 routePresenter.init();

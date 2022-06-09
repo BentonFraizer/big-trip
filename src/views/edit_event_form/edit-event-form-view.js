@@ -6,16 +6,15 @@ import dayjs from 'dayjs';
 import 'flatpickr/dist/flatpickr.min.css';
 
 const EMPTY_POINT = {
-  'id': null,
-  'type': '',
-  'dateFrom': '',
-  'dateTo': '',
+  'type': 'taxi',
+  'dateFrom': dayjs().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
+  'dateTo': dayjs().add(1, 'd').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
   'destination': {
     'name': '',
-    'description': '',
+    'description': null,
     'pictures': [],
   },
-  'basePrice': null,
+  'basePrice': 0,
   'isFavorite': false,
   'offers': [],
 };
@@ -25,7 +24,6 @@ const EMPTY_OFFERS = [];
 export default class EditEventFormView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
-  editable = true;
 
   constructor(point = EMPTY_POINT, offers = EMPTY_OFFERS) {
     super();
@@ -65,16 +63,28 @@ export default class EditEventFormView extends AbstractStatefulView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
+  setDeleteClickHandler (callback) {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#pointDeleteClickHandler);
+  }
+
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.#setDateFromPicker();
     this.#setDateToPicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setCloseEditFormClickHandler(this._callback.closeEditFormClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   };
 
   #changeBasePriceInputHandler = (evt) => {
+    //Реализация добавления только цифр в input
     evt.preventDefault();
+    if (evt.data === '-' || evt.data === '+' || evt.data === 'e') {
+      evt.target.value = '';
+    }
+    //Запрет нуля первым значением
+    evt.target.value = evt.target.value.replace(/^0/, '');
     this._setState({
       point: {
         ...this._state.point,
@@ -186,6 +196,11 @@ export default class EditEventFormView extends AbstractStatefulView {
       offersElement.addEventListener('click', this.#pickOffers);
     }
     this.element.querySelector('#event-price-1').addEventListener('input', this.#changeBasePriceInputHandler);
+  };
+
+  #pointDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
   };
 
   static parseDataToState = (pointData, offersData) => ({
