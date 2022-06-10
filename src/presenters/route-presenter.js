@@ -31,7 +31,7 @@ export default class RoutePresenter {
     this.#offersModel = offersModel;
     this.#filterModel = filterModel;
 
-    this.#pointNewPresenter = new PointNewPresenter (this.#eventsListContainer.element, this.#handleViewAction);
+    this.#pointNewPresenter = new PointNewPresenter (this.#eventsListContainer.element, this.#handleViewAction, this.#offersModel.offers);
 
     //#handleModelEvent это обработчик-наблюдатель, который будет реагировать на изменения в каждой модели, т.е. будет вызван
     this.#pointsModel.addObserver(this.#handleModelEvent);

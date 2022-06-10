@@ -6,12 +6,14 @@ import {UserAction, UpdateType} from '../consts';
 export default class PointNewPresenter {
   #eventsListContainer = null;
   #changeData = null;
+  #offers = null;
   #editPointFormComponent = null;
   #destroyCallback = null;
 
-  constructor(eventsListContainer, changeData) {
+  constructor(eventsListContainer, changeData, offers) {
     this.#eventsListContainer = eventsListContainer;
     this.#changeData = changeData;
+    this.#offers = offers;
   }
 
   init (callback) {
@@ -21,7 +23,7 @@ export default class PointNewPresenter {
       return;
     }
 
-    this.#editPointFormComponent = new EditEventFormView();
+    this.#editPointFormComponent = new EditEventFormView(undefined, this.#offers);
     this.#editPointFormComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#editPointFormComponent.setDeleteClickHandler(this.#handleDeleteClick);
 

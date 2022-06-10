@@ -1,5 +1,4 @@
 import dayjs from 'dayjs';
-import {getOffers} from '../../mock/offers';
 import he from 'he';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
@@ -78,7 +77,6 @@ const createEditEventFormTemplate = (point, allOffers) => {
       }).join('');
       return resultTemplate;
     } else {
-      allAvailableOffrers = getOffers();
       const pointWithCurrentType = allAvailableOffrers.find((currentOffer) => currentType === currentOffer.type);
       const resultTemplate = pointWithCurrentType.offers.map((offer) => {
         const checkedOffer = pointOffers.includes(offer.id) ? 'checked' : '';
