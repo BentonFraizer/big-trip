@@ -36,10 +36,12 @@ const handleNewPointButtonClick = () => {
 
 render(new TripInfoView(), tripMainElement);
 filterPresenter.init();
-render(newPointButtonComponent, tripMainElement);
-newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
-
 routePresenter.init();
-pointsModel.init();
-offersModel.init();
-destinationsModel.init();
+
+offersModel.init().finally(() => {
+  destinationsModel.init();
+  pointsModel.init().finally(() => {
+    render(newPointButtonComponent, tripMainElement);
+    newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
+  });
+});
