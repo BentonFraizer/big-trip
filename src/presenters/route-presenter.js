@@ -2,6 +2,7 @@ import EventsListView from '../views/events_list/events-list-view';
 import SortFormView from '../views/sort_form/sort-form-view';
 import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view';
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
+import LoadingView from '../views/loading/loading-view';
 import {remove, render} from '../framework/render';
 import PointPresenter from './point-presenter';
 import PointNewPresenter from './point-new-presenter';
@@ -19,11 +20,13 @@ export default class RoutePresenter {
   #eventsListContainer = new EventsListView();                // ul      class="trip-events__list"
   #sortComponent = null;                                      // form    class="trip-events__trip-sort  trip-sort"
   #noPoinstComponent = null;                                  // p       class="trip-events__msg">
+  #loadingComponent = new LoadingView();
 
   #pointPresenters = new Map();
   #pointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor(pageBodyContainer, pointsModel, offersModel, filterModel) {
     this.#pageBodyContainer = pageBodyContainer;
@@ -113,6 +116,12 @@ export default class RoutePresenter {
         this.#clearSortAndEventsBoard({resetSortType: true});
         this.#renderSortAndEventsBoard();
         break;
+      case UpdateType.INIT:
+        // - показать информационное сообщение в процессе ожидания загрузки данных с сервера
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderSortAndEventsBoard();
+        break;
       default:
         throw new Error ('The transferred update type does not exist');
     }
@@ -151,6 +160,10 @@ export default class RoutePresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
+  #renderLoading () {
+    render (this.#loadingComponent, this.#sortAndEventsContainer.element);
+  }
+
   //Метод отрисовки компонента информационного сообщения об отсутствии точек маршрута
   #renderNoPoints () {
     this.#noPoinstComponent = new EventsListEmptyView(this.#filterType);
@@ -164,6 +177,7 @@ export default class RoutePresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noPoinstComponent) {
       remove(this.#noPoinstComponent);
@@ -177,6 +191,11 @@ export default class RoutePresenter {
   //Метод отрисовки представления (доски) с компонентами сортировки, точек маршрута, информационных сообщений
   #renderSortAndEventsBoard () {
     render(this.#sortAndEventsContainer, this.#pageBodyContainer);
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     this.#renderSort();
     this.#renderPointsOrInfoContainer();
 

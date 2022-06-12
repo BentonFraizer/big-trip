@@ -1,5 +1,5 @@
 import Observable from '../framework/observable';
-import UpdateType from '../consts';
+import {UpdateType} from '../consts';
 
 export default class OffersModel extends Observable{
   #offersApiService = null;
@@ -8,6 +8,10 @@ export default class OffersModel extends Observable{
   constructor(offersApiService){
     super();
     this.#offersApiService = offersApiService;
+  }
+
+  get offers() {
+    return this.#offers;
   }
 
   init = async () => {
