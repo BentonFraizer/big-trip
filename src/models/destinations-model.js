@@ -2,14 +2,19 @@ import Observable from '../framework/observable';
 
 export default class DestinationsModel extends Observable{
   #destinationsApiService = null;
-  #destinations = null;
+  #destinations = [];
 
   constructor(destinationsApiService) {
     super();
     this.#destinationsApiService = destinationsApiService;
-
-    this.#destinationsApiService.destinations.then((destinations)=> {
-      console.log('Тут пункты назначения', destinations);
-    });
   }
+
+  init = async () => {
+    try {
+      const destinations = await this.destinationsApiService.destinations;
+      this.#destinations = destinations.map();
+    } catch(err){
+      this.#destinations = [];
+    }
+  };
 }

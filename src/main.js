@@ -40,3 +40,4 @@ render(newPointButtonComponent, tripMainElement);
 newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
 
 routePresenter.init();
+pointsModel.init();

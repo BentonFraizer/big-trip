@@ -2,20 +2,25 @@ import Observable from '../framework/observable';
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
-  #points = null;
+  #points = [];
 
   constructor(pointsApiService){
     super();
     this.#pointsApiService = pointsApiService;
-
-    this.#pointsApiService.points.then((points) => {
-      console.log('Тут точки с сервера', points.map(this.#adaptToClient));
-    });
   }
 
   get points () {
     return this.#points;
   }
+
+  init = async () => {
+    try {
+      const points = await this.#pointsApiService.points;
+      this.#points = points.map(this.#adaptToClient);
+    } catch(err){
+      this.#points = [];
+    }
+  };
 
   updatePoint = (updateType, update) => {
     const index = this.#points.findIndex((point) => point.id === update.id);
