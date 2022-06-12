@@ -28,7 +28,7 @@ export default class PointsApiService extends ApiService {
   //Метод для адаптирования наименований ключей. Данные, которые отправляются на сервер.
   #adaptToServer = (point) => {
     const adaptedPoint = {...point,
-      'base_price': point.basePrice,
+      'base_price': Number(point.basePrice),
       'date_from': point.dateFrom,
       'date_to': point.dateTo,
       'is_favorite': point.isFavorite,
