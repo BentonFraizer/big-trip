@@ -1,24 +1,23 @@
 import Observable from '../framework/observable';
+import UpdateType from '../consts';
 
 export default class OffersModel extends Observable{
   #offersApiService = null;
   #offers = [];
 
-  constructor(offerssApiService){
+  constructor(offersApiService){
     super();
-    this.#offersApiService = offerssApiService;
-  }
-
-  get offers() {
-    return this.#offers;
+    this.#offersApiService = offersApiService;
   }
 
   init = async () => {
     try {
       const offers = await this.#offersApiService.offers;
-      this.#offers = offers.map();
+      this.#offers = offers;
     } catch(err) {
       this.#offers = [];
     }
+
+    this._notify(UpdateType.INIT);
   };
 }
