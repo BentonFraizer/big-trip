@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import he from 'he';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-const createEditEventFormTemplate = (point, allOffers) => {
+const createEditEventFormTemplate = (point, allOffers, allDestinations) => {
   const {basePrice, type, destination, dateFrom, dateTo, offers, id} = point;
   if (allOffers.length === 0) {
     allOffers = null;
@@ -26,6 +26,14 @@ const createEditEventFormTemplate = (point, allOffers) => {
     return resultTemplate;
   };
   const picturesForDestinationTemplate = createPicturesForDestinationTemplate(pictures);
+  //===============================================================================================
+  const createDatalistTemplate = (destinations) => {
+    const list = destinations.map((destinationFromAll) =>
+      `<option value="${destinationFromAll.name}"></option>`
+    ).join('');
+    return list;
+  };
+  const datalistTemplate = createDatalistTemplate(allDestinations);
 
   //Функция создания разметки для отрисовки всей секции Description
   const destinationSectionTemplate = destination.description !== null
@@ -35,7 +43,7 @@ const createEditEventFormTemplate = (point, allOffers) => {
         ${picturesForDestinationTemplate}
       </section>`
     : '';
-
+  //===============================================================================================
   //Функция создания разметки элемента выбора типа события, выпадающего списка и установка отметки на выбранном типе события
   const createTypeCheckerTemplate = (typeOfEvent, allTypes) => {
     if (typeOfEvent !== null) {
@@ -150,9 +158,7 @@ const createEditEventFormTemplate = (point, allOffers) => {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination.name)}" list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${datalistTemplate}
             </datalist>
           </div>
 

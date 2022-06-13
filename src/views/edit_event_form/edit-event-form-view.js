@@ -25,16 +25,16 @@ export default class EditEventFormView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor(point = EMPTY_POINT, offers = EMPTY_OFFERS) {
+  constructor(point = EMPTY_POINT, offers = EMPTY_OFFERS, destinations) {
     super();
-    this._state = EditEventFormView.parseDataToState(point, offers);
+    this._state = EditEventFormView.parseDataToState(point, offers, destinations);
     this.#setInnerHandlers();
     this.#setDateFromPicker();
     this.#setDateToPicker();
   }
 
   get template() {
-    return createEditEventFormTemplate(this._state.point, this._state.offers);
+    return createEditEventFormTemplate(this._state.point, this._state.offers, this._state.destinations);
   }
 
   removeElement = () => {
@@ -52,9 +52,10 @@ export default class EditEventFormView extends AbstractStatefulView {
   };
 
   //Метод для сброса несохранённых данных. (Используется когда форма редактирования открыта и пользователь нажимает на Esc либо на кнопку закрытия задачи)
-  reset = (pointData, offersData) => {
+  reset = (pointData, offersData, destinationsData) => {
+    // console.log(pointData, offersData);
     this.updateElement(
-      EditEventFormView.parseDataToState(pointData, offersData),
+      EditEventFormView.parseDataToState(pointData, offersData, destinationsData),
     );
   };
 
@@ -96,7 +97,7 @@ export default class EditEventFormView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
+    this._callback.formSubmit(EditEventFormView.parseStateToData(this._state.point, this._state.offers, this._state.destinations));
   };
 
   #dateFromChangeHandler = ([userDateFrom]) => {
@@ -203,11 +204,12 @@ export default class EditEventFormView extends AbstractStatefulView {
     this._callback.deleteClick(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
   };
 
-  static parseDataToState = (pointData, offersData) => ({
+  static parseDataToState = (pointData, offersData, destinationsData) => ({
     point: {
       ...pointData,
     },
     offers: [...offersData],
+    destinations: [...destinationsData],
   });
 
   static parseStateToData = (statePoint, stateOffers) => {

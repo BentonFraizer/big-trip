@@ -7,13 +7,15 @@ export default class PointNewPresenter {
   #eventsListContainer = null;
   #changeData = null;
   #offers = null;
+  #destinations = null;
   #editPointFormComponent = null;
   #destroyCallback = null;
 
-  constructor(eventsListContainer, changeData, offers) {
+  constructor(eventsListContainer, changeData, offers, destinations) {
     this.#eventsListContainer = eventsListContainer;
     this.#changeData = changeData;
     this.#offers = offers;
+    this.#destinations = destinations;
   }
 
   init (callback) {
@@ -23,7 +25,7 @@ export default class PointNewPresenter {
       return;
     }
 
-    this.#editPointFormComponent = new EditEventFormView(undefined, this.#offers);
+    this.#editPointFormComponent = new EditEventFormView(undefined, this.#offers, this.#destinations);
     this.#editPointFormComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#editPointFormComponent.setDeleteClickHandler(this.#handleDeleteClick);
 

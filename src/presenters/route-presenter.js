@@ -14,6 +14,7 @@ export default class RoutePresenter {
   #pageBodyContainer = null;
   #pointsModel = null;
   #offersModel = null;
+  #destinationsModel = null;
   #filterModel = null;
 
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
@@ -28,13 +29,14 @@ export default class RoutePresenter {
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
 
-  constructor(pageBodyContainer, pointsModel, offersModel, filterModel) {
+  constructor(pageBodyContainer, pointsModel, offersModel, filterModel, destinationsModel) {
     this.#pageBodyContainer = pageBodyContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
 
-    this.#pointNewPresenter = new PointNewPresenter (this.#eventsListContainer.element, this.#handleViewAction, this.#offersModel.offers);
+    this.#pointNewPresenter = new PointNewPresenter (this.#eventsListContainer.element, this.#handleViewAction, this.#offersModel.offers, this.#destinationsModel.destinations);
 
     //#handleModelEvent это обработчик-наблюдатель, который будет реагировать на изменения в каждой модели, т.е. будет вызван
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -62,6 +64,10 @@ export default class RoutePresenter {
   //Метод (геттер) для получения данных о дополнительных предложениях из модели OffersModel
   get offers() {
     return this.#offersModel.offers;
+  }
+
+  get destinations() {
+    return  this.#destinationsModel.destinations;
   }
 
   init () {
@@ -104,7 +110,7 @@ export default class RoutePresenter {
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка (например, когда точка маршрута попадает в избранное)
-        this.#pointPresenters.get(data.id).init(data, this.offers);
+        this.#pointPresenters.get(data.id).init(data, this.offers, this.destinations);
         break;
       case UpdateType.MINOR:
         // - обновить список (например, при удалении точки маршрута)
@@ -154,9 +160,9 @@ export default class RoutePresenter {
   }
 
   //Метод отрисовки компонента точки маршрута
-  #renderPoint (point, offers) {
+  #renderPoint (point, offers, destinations) {
     const pointPresenter = new PointPresenter(this.#eventsListContainer.element, this.#handleViewAction, this.#handleModeChange);
-    pointPresenter.init(point, offers);
+    pointPresenter.init(point, offers, destinations);
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
@@ -205,7 +211,7 @@ export default class RoutePresenter {
     }
 
     this.points.forEach((element, index) => {
-      this.#renderPoint(this.points[index], this.offers);
+      this.#renderPoint(this.points[index], this.offers, this.destinations);
     });
   }
 }

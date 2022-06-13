@@ -19,6 +19,7 @@ export default class PointPresenter {
 
   #point = null;
   #offers = null;
+  #destinations = null;
   #mode = Mode.DEFAULT;
 
   constructor(eventsListContainer, changeData, changeMode) {
@@ -27,16 +28,17 @@ export default class PointPresenter {
     this.#changeMode = changeMode;
   }
 
-  init (point, offers) {
+  init (point, offers, destinations) {
     this.#point = point;
     this.#offers = offers;
+    this.#destinations = destinations;
 
     //Сохранение свойств в переменные для дальнейшего переиспользования
     const prevPointComponent = this.#pointComponent;
     const prevEditPointFormComponent = this.#editPointFormComponent;
 
     this.#pointComponent = new EventView(this.#point, this.#offers);
-    this.#editPointFormComponent = new EditEventFormView(this.#point, this.#offers);
+    this.#editPointFormComponent = new EditEventFormView(this.#point, this.#offers, this.#destinations);
 
     this.#pointComponent.setOpenEditFormClickHandler(this.#handleOpenEditFormClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -69,7 +71,7 @@ export default class PointPresenter {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
-      this.#editPointFormComponent.reset(this.#point, this.#offers);
+      this.#editPointFormComponent.reset(this.#point, this.#offers, this.#destinations);
       this.#replaceFormToPoint();
     }
   };
@@ -91,7 +93,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (isEscKeyPressed(evt)) {
       evt.preventDefault();
-      this.#editPointFormComponent.reset(this.#point, this.#offers);
+      this.#editPointFormComponent.reset(this.#point, this.#offers, this.#destinations);
       this.#replaceFormToPoint();
     }
   };
@@ -113,7 +115,7 @@ export default class PointPresenter {
 
   //Замена формы на точку маршрута по клику на кнопку с изображением галочки
   #handleCloseEditFormClick = () => {
-    this.#editPointFormComponent.reset(this.#point, this.#offers);
+    this.#editPointFormComponent.reset(this.#point, this.#offers, this.#destinations);
     this.#replaceFormToPoint();
   };
 
