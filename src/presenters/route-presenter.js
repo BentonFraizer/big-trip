@@ -2,6 +2,7 @@ import EventsListView from '../views/events_list/events-list-view';
 import SortFormView from '../views/sort_form/sort-form-view';
 import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view';
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
+import LoadingView from '../views/loading/loading-view';
 import {remove, render} from '../framework/render';
 import PointPresenter from './point-presenter';
 import PointNewPresenter from './point-new-presenter';
@@ -13,25 +14,29 @@ export default class RoutePresenter {
   #pageBodyContainer = null;
   #pointsModel = null;
   #offersModel = null;
+  #destinationsModel = null;
   #filterModel = null;
 
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
   #eventsListContainer = new EventsListView();                // ul      class="trip-events__list"
   #sortComponent = null;                                      // form    class="trip-events__trip-sort  trip-sort"
   #noPoinstComponent = null;                                  // p       class="trip-events__msg">
+  #loadingComponent = new LoadingView();
 
   #pointPresenters = new Map();
   #pointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
-  constructor(pageBodyContainer, pointsModel, offersModel, filterModel) {
+  constructor(pageBodyContainer, pointsModel, offersModel, filterModel, destinationsModel) {
     this.#pageBodyContainer = pageBodyContainer;
     this.#pointsModel = pointsModel;
     this.#offersModel = offersModel;
+    this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
 
-    this.#pointNewPresenter = new PointNewPresenter (this.#eventsListContainer.element, this.#handleViewAction);
+    this.#pointNewPresenter = new PointNewPresenter (this.#eventsListContainer.element, this.#handleViewAction, this.#offersModel.offers, this.#destinationsModel.destinations);
 
     //#handleModelEvent это обработчик-наблюдатель, который будет реагировать на изменения в каждой модели, т.е. будет вызван
     this.#pointsModel.addObserver(this.#handleModelEvent);
@@ -59,6 +64,10 @@ export default class RoutePresenter {
   //Метод (геттер) для получения данных о дополнительных предложениях из модели OffersModel
   get offers() {
     return this.#offersModel.offers;
+  }
+
+  get destinations() {
+    return  this.#destinationsModel.destinations;
   }
 
   init () {
@@ -101,7 +110,7 @@ export default class RoutePresenter {
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка (например, когда точка маршрута попадает в избранное)
-        this.#pointPresenters.get(data.id).init(data, this.offers);
+        this.#pointPresenters.get(data.id).init(data, this.offers, this.destinations);
         break;
       case UpdateType.MINOR:
         // - обновить список (например, при удалении точки маршрута)
@@ -111,6 +120,12 @@ export default class RoutePresenter {
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
         this.#clearSortAndEventsBoard({resetSortType: true});
+        this.#renderSortAndEventsBoard();
+        break;
+      case UpdateType.INIT:
+        // - показать информационное сообщение в процессе ожидания загрузки данных с сервера
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderSortAndEventsBoard();
         break;
       default:
@@ -145,10 +160,14 @@ export default class RoutePresenter {
   }
 
   //Метод отрисовки компонента точки маршрута
-  #renderPoint (point, offers) {
+  #renderPoint (point, offers, destinations) {
     const pointPresenter = new PointPresenter(this.#eventsListContainer.element, this.#handleViewAction, this.#handleModeChange);
-    pointPresenter.init(point, offers);
+    pointPresenter.init(point, offers, destinations);
     this.#pointPresenters.set(point.id, pointPresenter);
+  }
+
+  #renderLoading () {
+    render (this.#loadingComponent, this.#sortAndEventsContainer.element);
   }
 
   //Метод отрисовки компонента информационного сообщения об отсутствии точек маршрута
@@ -164,6 +183,7 @@ export default class RoutePresenter {
     this.#pointPresenters.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noPoinstComponent) {
       remove(this.#noPoinstComponent);
@@ -177,6 +197,11 @@ export default class RoutePresenter {
   //Метод отрисовки представления (доски) с компонентами сортировки, точек маршрута, информационных сообщений
   #renderSortAndEventsBoard () {
     render(this.#sortAndEventsContainer, this.#pageBodyContainer);
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     this.#renderSort();
     this.#renderPointsOrInfoContainer();
 
@@ -186,7 +211,7 @@ export default class RoutePresenter {
     }
 
     this.points.forEach((element, index) => {
-      this.#renderPoint(this.points[index], this.offers);
+      this.#renderPoint(this.points[index], this.offers, this.destinations);
     });
   }
 }

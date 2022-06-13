@@ -5,12 +5,12 @@ import dayjs from 'dayjs';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-const EMPTY_POINT = {
+const DEFAULT_POINT = {
   'type': 'taxi',
   'dateFrom': dayjs().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
   'dateTo': dayjs().add(1, 'd').format('YYYY-MM-DDTHH:mm:ss.SSS[Z]'),
   'destination': {
-    'name': '',
+    'name': 'Vien',
     'description': null,
     'pictures': [],
   },
@@ -25,16 +25,16 @@ export default class EditEventFormView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor(point = EMPTY_POINT, offers = EMPTY_OFFERS) {
+  constructor(point = DEFAULT_POINT, offers = EMPTY_OFFERS, destinations) {
     super();
-    this._state = EditEventFormView.parseDataToState(point, offers);
+    this._state = EditEventFormView.parseDataToState(point, offers, destinations);
     this.#setInnerHandlers();
     this.#setDateFromPicker();
     this.#setDateToPicker();
   }
 
   get template() {
-    return createEditEventFormTemplate(this._state.point, this._state.offers);
+    return createEditEventFormTemplate(this._state.point, this._state.offers, this._state.destinations);
   }
 
   removeElement = () => {
@@ -52,9 +52,9 @@ export default class EditEventFormView extends AbstractStatefulView {
   };
 
   //Метод для сброса несохранённых данных. (Используется когда форма редактирования открыта и пользователь нажимает на Esc либо на кнопку закрытия задачи)
-  reset = (pointData, offersData) => {
+  reset = (pointData, offersData, destinationsData) => {
     this.updateElement(
-      EditEventFormView.parseDataToState(pointData, offersData),
+      EditEventFormView.parseDataToState(pointData, offersData, destinationsData),
     );
   };
 
@@ -94,9 +94,33 @@ export default class EditEventFormView extends AbstractStatefulView {
     });
   };
 
+  #changeCityDestinationHandler = (evt) => {
+    evt.preventDefault();
+    this._state.destinations.forEach((element) => {
+      if (evt.target.value === element.name) {
+        this.updateElement({
+          point: {...this._state.point,
+            destination: {
+              name: element.name,
+              pictures: element.pictures,
+              description: element.description,
+            }
+          },
+          offers: [...this._state.offers],
+          destinations: [...this._state.destinations]
+        });
+      }
+    });
+  };
+
+  #clearCityDestinationInputHandler = (evt) => {
+    evt.preventDefault();
+    evt.target.value = '';
+  };
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
+    this._callback.formSubmit(EditEventFormView.parseStateToData(this._state.point, this._state.offers, this._state.destinations));
   };
 
   #dateFromChangeHandler = ([userDateFrom]) => {
@@ -196,25 +220,29 @@ export default class EditEventFormView extends AbstractStatefulView {
       offersElement.addEventListener('click', this.#pickOffers);
     }
     this.element.querySelector('#event-price-1').addEventListener('input', this.#changeBasePriceInputHandler);
+    this.element.querySelector('#event-destination-1').addEventListener('change', this.#changeCityDestinationHandler);
+    this.element.querySelector('#event-destination-1').addEventListener('focus', this.#clearCityDestinationInputHandler);
   };
 
   #pointDeleteClickHandler = (evt) => {
     evt.preventDefault();
-    this._callback.deleteClick(EditEventFormView.parseStateToData(this._state.point, this._state.offers));
+    this._callback.deleteClick(EditEventFormView.parseStateToData(this._state.point, this._state.offers, this._state.destinations));
   };
 
-  static parseDataToState = (pointData, offersData) => ({
+  static parseDataToState = (pointData, offersData, destinationsData) => ({
     point: {
       ...pointData,
     },
     offers: [...offersData],
+    destinations: [...destinationsData],
   });
 
-  static parseStateToData = (statePoint, stateOffers) => {
+  static parseStateToData = (statePoint, stateOffers, stateDestinations) => {
     const point = {...statePoint,};
     const offers = [...stateOffers];
+    const destinations = [...stateDestinations];
 
-    return {point, offers};
+    return {point, offers, destinations};
   };
 
   setCloseEditFormClickHandler (callback){

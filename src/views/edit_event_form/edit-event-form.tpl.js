@@ -1,41 +1,59 @@
 import dayjs from 'dayjs';
-import {getOffers} from '../../mock/offers';
 import he from 'he';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-const createEditEventFormTemplate = (point, allOffers) => {
+const createEditEventFormTemplate = (point, allOffers, allDestinations) => {
   const {basePrice, type, destination, dateFrom, dateTo, offers, id} = point;
   if (allOffers.length === 0) {
     allOffers = null;
   }
 
-  //Функция создания разметки для отрисовки картинок поля Destination
-  const pictures = destination.pictures;
-  const createPicturesForDestinationTemplate = (images) => {
-    const imagesForContainer = images.map((image) =>
-      `<img class="event__photo" src="${image.src}" alt="${image.description}">`
+  //Функция для создания списка всех возможных городов (datalist)
+  const createDatalistTemplate = (destinations) => {
+    const list = destinations.map((destinationFromAll) =>
+      `<option value="${destinationFromAll.name}"></option>`
     ).join('');
-
-    const resultTemplate = images.length !== 0
-      ? `<div class="event__photos-container">
-          <div class="event__photos-tape">
-            ${imagesForContainer}
-          </div>
-        </div>`
-      : '';
-
-    return resultTemplate;
+    return list;
   };
-  const picturesForDestinationTemplate = createPicturesForDestinationTemplate(pictures);
+  const datalistTemplate = createDatalistTemplate(allDestinations);
 
-  //Функция создания разметки для отрисовки всей секции Description
-  const destinationSectionTemplate = destination.description !== null
-    ? `<section class="event__section  event__section--destination">
+  //Функция создания разметки секции Destination
+  const createDestinationSectionTemplate = (cityName, destinations) => {
+    if (cityName && (destinations.length > 0)) {
+      const destinationWithCityName = destinations.find((currentDestination) => cityName === currentDestination.name);
+
+      //Функция создания разметки для отрисовки картинок поля Destination
+      const pictures = destinationWithCityName.pictures;
+      const createPicturesForDestinationTemplate = (images) => {
+        const imagesForContainer = images.map((image) =>
+          `<img class="event__photo" src="${image.src}" alt="${image.description}">`
+        ).join('');
+
+        const resultImagesTemplate = images.length !== 0
+          ? `<div class="event__photos-container">
+              <div class="event__photos-tape">
+                ${imagesForContainer}
+              </div>
+            </div>`
+          : '';
+
+        return resultImagesTemplate;
+      };
+      const picturesForDestinationTemplate = createPicturesForDestinationTemplate(pictures);
+
+      const resultTemplate =
+      `<section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${destination.description}</p>
+        <p class="event__destination-description">${destinationWithCityName.description}</p>
         ${picturesForDestinationTemplate}
-      </section>`
-    : '';
+      </section>`;
+
+      return resultTemplate;
+    } else {
+      return '';
+    }
+  };
+  const destinationSectionTemplate = createDestinationSectionTemplate(destination.name, allDestinations);
 
   //Функция создания разметки элемента выбора типа события, выпадающего списка и установка отметки на выбранном типе события
   const createTypeCheckerTemplate = (typeOfEvent, allTypes) => {
@@ -78,7 +96,6 @@ const createEditEventFormTemplate = (point, allOffers) => {
       }).join('');
       return resultTemplate;
     } else {
-      allAvailableOffrers = getOffers();
       const pointWithCurrentType = allAvailableOffrers.find((currentOffer) => currentType === currentOffer.type);
       const resultTemplate = pointWithCurrentType.offers.map((offer) => {
         const checkedOffer = pointOffers.includes(offer.id) ? 'checked' : '';
@@ -152,9 +169,7 @@ const createEditEventFormTemplate = (point, allOffers) => {
             </label>
             <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${he.encode(destination.name)}" list="destination-list-1">
             <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
+              ${datalistTemplate}
             </datalist>
           </div>
 
