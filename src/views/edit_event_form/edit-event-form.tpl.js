@@ -2,11 +2,10 @@ import dayjs from 'dayjs';
 import he from 'he';
 
 const TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+const DEFAULT_OFFERS_AMOUT = 1;
+
 const createEditEventFormTemplate = (point, allOffers, allDestinations) => {
   const {basePrice, type, destination, dateFrom, dateTo, offers, id} = point;
-  if (allOffers.length === 0) {
-    allOffers = null;
-  }
 
   //Функция для создания списка всех возможных городов (datalist)
   const createDatalistTemplate = (destinations) => {
@@ -79,7 +78,7 @@ const createEditEventFormTemplate = (point, allOffers, allDestinations) => {
 
   //Функция создания разметки всех возможных офферов для текущего типа события
   const createAvailableOffrersTemplate = (allAvailableOffrers, currentType, pointOffers) => {
-    if (allAvailableOffrers !== null) {
+    if (allAvailableOffrers.length > DEFAULT_OFFERS_AMOUT) {
       //Находим объект, совпадающий по типу с текущим типом события и массивом всех доступных предложений к данному типу события
       const pointWithCurrentType = allAvailableOffrers.find((currentOffer) => currentType === currentOffer.type);
       //Формирование шаблона всех доступных дополнительных функций по полученным данным. Выставление checked совпавшим по id опциям
@@ -96,7 +95,7 @@ const createEditEventFormTemplate = (point, allOffers, allDestinations) => {
       }).join('');
       return resultTemplate;
     } else {
-      const pointWithCurrentType = allAvailableOffrers.find((currentOffer) => currentType === currentOffer.type);
+      const pointWithCurrentType = allAvailableOffrers[0];
       const resultTemplate = pointWithCurrentType.offers.map((offer) => {
         const checkedOffer = pointOffers.includes(offer.id) ? 'checked' : '';
         return `<div class="event__offer-selector">
@@ -115,7 +114,7 @@ const createEditEventFormTemplate = (point, allOffers, allDestinations) => {
 
   //Функция создания разметки всей секции с дополнительными опциями
   const createAvailableOffrersSectionTemplate = (allAvailableOffrers, currentType, templateWithOffers) => {
-    if (allAvailableOffrers !== null) {
+    if (allAvailableOffrers > DEFAULT_OFFERS_AMOUT) {
       const pointWithCurrentType = allAvailableOffrers.find((currentOffer) => currentType === currentOffer.type);
       if (pointWithCurrentType.offers.length !== 0){
         return `
