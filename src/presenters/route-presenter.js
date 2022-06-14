@@ -90,19 +90,31 @@ export default class RoutePresenter {
   // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
   // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
   // update - обновленные данные
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this.#pointPresenters.get(update.id).setSaving(update);
-        this.#pointsModel.updatePoint(updateType, update);
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenters.get(update.id).setAborting(update, this.offers, this.destinations);
+        }
         break;
       case UserAction.ADD_POINT:
         this.#pointNewPresenter.setSaving(update, this.offers, this.destinations);
-        this.#pointsModel.addPoint(updateType, update);
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#pointNewPresenter.setAborting(update, this.offers, this.destinations);
+        }
         break;
       case UserAction.DELETE_POINT:
         this.#pointPresenters.get(update.id).setDeleting(update);
-        this.#pointsModel.deletePoint(updateType, update);
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenters.get(update.id).setAborting(update, this.offers, this.destinations);
+        }
         break;
     }
   };

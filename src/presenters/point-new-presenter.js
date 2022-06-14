@@ -58,6 +58,23 @@ export default class PointNewPresenter {
     });
   };
 
+  setAborting = (update, offers, destinations) => {
+    const resetFormState = () => {
+      this.#editPointFormComponent.updateElement({
+        point: {
+          ...update,
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        },
+        offers: [...offers,],
+        destinations: [...destinations,],
+      });
+    };
+
+    this.#editPointFormComponent.shake(resetFormState);
+  };
+
   #handleFormSubmit = (update) => {
     this.#changeData(
       UserAction.ADD_POINT,
