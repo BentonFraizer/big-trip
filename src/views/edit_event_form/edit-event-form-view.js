@@ -316,6 +316,7 @@ export default class EditEventFormView extends AbstractStatefulView {
     },
     offers: [...offersData],
     destinations: [...destinationsData],
+
   });
 
   static parseStateToData = (statePoint, stateOffers, stateDestinations) => {
@@ -323,9 +324,9 @@ export default class EditEventFormView extends AbstractStatefulView {
     const offers = [...stateOffers];
     const destinations = [...stateDestinations];
 
-    delete statePoint.isDisabled;
-    delete statePoint.isSaving;
-    delete statePoint.isDeleting;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
 
     return {point, offers, destinations};
   };

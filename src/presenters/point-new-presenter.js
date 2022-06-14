@@ -46,10 +46,15 @@ export default class PointNewPresenter {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
-  setSaving = () => {
+  setSaving = (update, offers, destinations) => {
     this.#editPointFormComponent.updateElement({
-      isDisabled: true,
-      isSaving: true,
+      point: {
+        ...update,
+        isDisabled: true,
+        isSaving: true,
+      },
+      offers: [...offers,],
+      destinations: [...destinations,],
     });
   };
 

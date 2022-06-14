@@ -143,6 +143,18 @@ const createEditEventFormTemplate = (point, allOffers, allDestinations) => {
   };
   const availableOffrersSectionTemplate = createAvailableOffrersSectionTemplate(allOffers, type, availableOffrersTemplate);
 
+  const createButtonName = (idNumber, deleting) => {
+    if (!idNumber) {
+      return 'Cancel';
+    } else if (!deleting) {
+      return 'Delete';
+    } else {
+      return 'Deleting...';
+    }
+  };
+
+  const buttonName = createButtonName(id, isDeleting);
+
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -188,8 +200,11 @@ const createEditEventFormTemplate = (point, allOffers, allDestinations) => {
             <input class="event__input event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${he.encode(String(basePrice))}" ${isDisabled ? 'disabled' : ''}>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
-          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${id === undefined ? 'Cancel' : 'Delete'} ${isDeleting ? 'Deleting...' : ''}</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>
+            ${isSaving ? 'Saving...' : 'Save'}
+          </button>
+          <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>
+            ${buttonName}
           <button class="event__rollup-btn" type="button" style="display:${id === undefined ? ' none' : ' block' }">
             <span class="visually-hidden">Open event</span>
           </button>
