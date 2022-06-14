@@ -2,7 +2,6 @@ import EventsListView from '../views/events_list/events-list-view';
 import SortFormView from '../views/sort_form/sort-form-view';
 import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view';
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
-import LoadingView from '../views/loading/loading-view';
 import {remove, render} from '../framework/render';
 import PointPresenter from './point-presenter';
 import PointNewPresenter from './point-new-presenter';
@@ -21,7 +20,7 @@ export default class RoutePresenter {
   #eventsListContainer = new EventsListView();                // ul      class="trip-events__list"
   #sortComponent = null;                                      // form    class="trip-events__trip-sort  trip-sort"
   #noPoinstComponent = null;                                  // p       class="trip-events__msg">
-  #loadingComponent = new LoadingView();
+  #loadingComponent = new EventsListEmptyView(FilterType.LOADING);
 
   #pointPresenters = new Map();
   #pointNewPresenter = null;

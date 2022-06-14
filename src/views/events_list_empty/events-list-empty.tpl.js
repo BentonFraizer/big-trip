@@ -4,6 +4,7 @@ const NoPointsTextType = {
   [FilterType.EVERYTHING]: 'Click New Event to create your first point',
   [FilterType.FUTURE]: 'There are no future points now',
   [FilterType.PAST]: 'There are no past points now',
+  [FilterType.LOADING]: 'Loading...',
 };
 
 const createEventsListEmptyTemplate = (filterType) => {

@@ -11,7 +11,7 @@ import PointsApiService from './api_services/points-api-service';
 import OffersApiService from './api_services/offers-api-service';
 import DestinationsApiService from './api_services/destinations-api-service';
 
-const AUTHORIZATION = 'Basic ljsu4yhgj4i4u4u4';
+const AUTHORIZATION = 'Basic ljsu4yhgj4i4u4u';
 const END_POINT = 'https://17.ecmascript.pages.academy/big-trip';
 
 const tripMainElement = document.querySelector('.trip-main');

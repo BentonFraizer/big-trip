@@ -21,6 +21,7 @@ const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
   PAST: 'past',
+  LOADING: 'loading',
 };
 
 export {SortType, UserAction, UpdateType, FilterType};
