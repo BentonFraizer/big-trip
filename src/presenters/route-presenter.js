@@ -15,12 +15,13 @@ export default class RoutePresenter {
   #offersModel = null;
   #destinationsModel = null;
   #filterModel = null;
+  #LOADING = 'loading';
 
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
   #eventsListContainer = new EventsListView();                // ul      class="trip-events__list"
   #sortComponent = null;                                      // form    class="trip-events__trip-sort  trip-sort"
   #noPoinstComponent = null;                                  // p       class="trip-events__msg">
-  #loadingComponent = new EventsListEmptyView(FilterType.LOADING);
+  #loadingComponent = new EventsListEmptyView(this.#LOADING);
 
   #pointPresenters = new Map();
   #pointNewPresenter = null;

@@ -7,9 +7,9 @@ import DestinationsModel from './models/destinations-model';
 import FilterModel from './models/filter-model';
 import TripInfoView from './views/trip_info/trip-info-view';
 import NewEventButtonView from './views/new_event_button/new-event-button-view';
-import PointsApiService from './api_services/points-api-service';
-import OffersApiService from './api_services/offers-api-service';
-import DestinationsApiService from './api_services/destinations-api-service';
+import PointsApiService from './services/api/points-api-service';
+import OffersApiService from './services/api/offers-api-service';
+import DestinationsApiService from './services/api/destinations-api-service';
 
 const AUTHORIZATION = 'Basic ljsu4yhgj4i4u4u';
 const END_POINT = 'https://17.ecmascript.pages.academy/big-trip';
@@ -38,9 +38,9 @@ render(new TripInfoView(), tripMainElement);
 filterPresenter.init();
 routePresenter.init();
 
-offersModel.init().finally(() => {
-  destinationsModel.init().finally(()=>{
-    pointsModel.init().finally(() => {
+offersModel.init().then(() => {
+  destinationsModel.init().then(() => {
+    pointsModel.init().then(() => {
       render(newPointButtonComponent, tripMainElement);
       newPointButtonComponent.setClickHandler(handleNewPointButtonClick);
     });

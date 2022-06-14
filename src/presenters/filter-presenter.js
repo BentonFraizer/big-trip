@@ -22,23 +22,12 @@ export default class FilterPresenter {
   get filters() {
     const points = this.#pointsModel.points;
 
-    return [
-      {
-        type: FilterType.EVERYTHING,
-        name: 'everything',
-        count: filter[FilterType.EVERYTHING](points).length,
-      },
-      {
-        type: FilterType.FUTURE,
-        name: 'future',
-        count: filter[FilterType.FUTURE](points).length,
-      },
-      {
-        type: FilterType.PAST,
-        name: 'past',
-        count: filter[FilterType.PAST](points).length,
-      }
-    ];
+    return Object.entries(FilterType).map(
+      ([type]) => ({
+        type: FilterType[type],
+        count: filter[FilterType[type]](points).length,
+      }),
+    );
   }
 
   init () {

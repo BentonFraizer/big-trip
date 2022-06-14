@@ -13,7 +13,7 @@ const isPastDate = (outerDate) => outerDate && dayjs().isAfter(outerDate, 'D');
 const filter = {
   [FilterType.EVERYTHING]: (points) => points,
   [FilterType.FUTURE]: (points) => points.filter((point) => isFutureDate(point.dateFrom) || isSameDate(point.dateFrom)),
-  [FilterType.PAST]: (points) => points.filter((point) => isPastDate(point.dateTo))
+  [FilterType.PAST]: (points) => points.filter((point) => isPastDate(point.dateTo)),
 };
 
 export {filter};
