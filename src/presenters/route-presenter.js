@@ -1,3 +1,4 @@
+import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import EventsListView from '../views/events_list/events-list-view';
 import SortFormView from '../views/sort_form/sort-form-view';
 import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view';
@@ -8,6 +9,11 @@ import PointNewPresenter from './point-new-presenter';
 import {filter} from '../utils/filter';
 import {SortType, UserAction, UpdateType, FilterType} from '../consts';
 import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils/utils';
+
+const TimeLimit = {
+  LOWER_LIMIT: 200,
+  UPPER_LIMIT: 1000,
+};
 
 export default class RoutePresenter {
   #pageBodyContainer = null;
@@ -28,6 +34,7 @@ export default class RoutePresenter {
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(pageBodyContainer, pointsModel, offersModel, filterModel, destinationsModel) {
     this.#pageBodyContainer = pageBodyContainer;
@@ -91,6 +98,8 @@ export default class RoutePresenter {
   // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
   // update - обновленные данные
   #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this.#pointPresenters.get(update.id).setSaving(update);
@@ -117,6 +126,8 @@ export default class RoutePresenter {
         }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   //Метод-обработчик для отслеживания обновления данных в Model
