@@ -57,7 +57,8 @@ export default class PointPresenter {
     }
 
     if (this.#mode === Mode.EDITING) {
-      replace(this.#editPointFormComponent, prevEditPointFormComponent);
+      replace(this.#pointComponent, prevEditPointFormComponent);
+      this.#mode = Mode.DEFAULT;
     }
 
     remove(prevPointComponent);
@@ -74,6 +75,52 @@ export default class PointPresenter {
       this.#editPointFormComponent.reset(this.#point, this.#offers, this.#destinations);
       this.#replaceFormToPoint();
     }
+  };
+
+  setSaving = (update) => {
+    if (this.#mode === Mode.EDITING) {
+      this.#editPointFormComponent.updateElement({
+        point: {
+          ...update,
+          isDisabled: true,
+          isSaving: true,
+        }
+      },
+      );
+    }
+  };
+
+  setDeleting = (update) => {
+    if (this.#mode === Mode.EDITING) {
+      this.#editPointFormComponent.updateElement({
+        point: {
+          ...update,
+          isDisabled: true,
+          isDeleting: true,
+        }
+      });
+    }
+  };
+
+  setAborting = (update, offers, destinations) => {
+    if (this.#mode === Mode.DEFAULT) {
+      this.#pointComponent.shake();
+    }
+
+    const resetFormState = () => {
+      this.#editPointFormComponent.updateElement({
+        point: {
+          ...update,
+          isDisabled: false,
+          isSaving: false,
+          isDeleting: false,
+        },
+        offers: [...offers,],
+        destinations: [...destinations,],
+      });
+    };
+
+    this.#editPointFormComponent.shake(resetFormState);
   };
 
   #replacePointToForm = () => {
@@ -134,7 +181,6 @@ export default class PointPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       {...update.point,},
       {...update.offers,});
-    this.#replaceFormToPoint();
   };
 
   //Удаление точки маршрута

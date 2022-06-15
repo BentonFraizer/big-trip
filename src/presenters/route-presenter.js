@@ -1,8 +1,8 @@
+import UiBlocker from '../framework/ui-blocker/ui-blocker';
 import EventsListView from '../views/events_list/events-list-view';
 import SortFormView from '../views/sort_form/sort-form-view';
 import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view';
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
-import LoadingView from '../views/loading/loading-view';
 import {remove, render} from '../framework/render';
 import PointPresenter from './point-presenter';
 import PointNewPresenter from './point-new-presenter';
@@ -10,24 +10,31 @@ import {filter} from '../utils/filter';
 import {SortType, UserAction, UpdateType, FilterType} from '../consts';
 import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils/utils';
 
+const TimeLimit = {
+  LOWER_LIMIT: 200,
+  UPPER_LIMIT: 1000,
+};
+
 export default class RoutePresenter {
   #pageBodyContainer = null;
   #pointsModel = null;
   #offersModel = null;
   #destinationsModel = null;
   #filterModel = null;
+  #LOADING = 'loading';
 
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
   #eventsListContainer = new EventsListView();                // ul      class="trip-events__list"
   #sortComponent = null;                                      // form    class="trip-events__trip-sort  trip-sort"
   #noPoinstComponent = null;                                  // p       class="trip-events__msg">
-  #loadingComponent = new LoadingView();
+  #loadingComponent = new EventsListEmptyView(this.#LOADING);
 
   #pointPresenters = new Map();
   #pointNewPresenter = null;
   #currentSortType = SortType.DAY;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(pageBodyContainer, pointsModel, offersModel, filterModel, destinationsModel) {
     this.#pageBodyContainer = pageBodyContainer;
@@ -90,18 +97,37 @@ export default class RoutePresenter {
   // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
   // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
   // update - обновленные данные
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setSaving(update);
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenters.get(update.id).setAborting(update, this.offers, this.destinations);
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#pointNewPresenter.setSaving(update, this.offers, this.destinations);
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#pointNewPresenter.setAborting(update, this.offers, this.destinations);
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setDeleting(update);
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenters.get(update.id).setAborting(update, this.offers, this.destinations);
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   //Метод-обработчик для отслеживания обновления данных в Model

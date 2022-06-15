@@ -1,4 +1,4 @@
-import ApiService from '../framework/api-service';
+import ApiService from '../../framework/api-service';
 
 export default class OffersApiService extends ApiService {
   get offers() {

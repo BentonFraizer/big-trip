@@ -1,4 +1,4 @@
-import ApiService from '../framework/api-service';
+import ApiService from '../../framework/api-service';
 
 const Method = {
   GET: 'GET',
@@ -23,6 +23,28 @@ export default class PointsApiService extends ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  };
+
+  addPoint = async (point) => {
+    const response = await this._load({
+      url: 'points',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  };
+
+  deletePoint = async (point) => {
+    const response = await this._load({
+      url: `points/${point.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   };
 
   //Метод для адаптирования наименований ключей. Данные, которые отправляются на сервер.
