@@ -17,11 +17,16 @@ export default class PointNewPresenter {
     this.#destinations = destinations;
   }
 
-  init (callback) {
+  init (callback, allOffers, allDestinations) {
     this.#destroyCallback = callback;
 
     if (this.#editPointFormComponent !== null) {
       return;
+    }
+
+    if (!this.#offers.length) {
+      this.#offers = allOffers;
+      this.#destinations = allDestinations;
     }
 
     this.#editPointFormComponent = new EditEventFormView(undefined, this.#offers, this.#destinations);

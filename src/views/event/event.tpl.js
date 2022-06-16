@@ -43,9 +43,8 @@ const createEventTemplate = (point, allOffers) => {
       if (extraMinutes > MINUTES_IN_HOUR) {
         const extraHours = Math.floor(extraMinutes / MINUTES_IN_HOUR);
         return extraMinutes - (extraHours * MINUTES_IN_HOUR);
-      } else {
-        return extraMinutes;
       }
+      return extraMinutes;
     }
   };
   const restMinutesAmount = getRestMinutes(timeDaysDifference, timeMinutesDifference);
@@ -87,9 +86,8 @@ const createEventTemplate = (point, allOffers) => {
           +€&nbsp;
           <span class="event__offer-price">${offer.price}</span>
         </li>`;
-      } else {
-        return '';
       }
+      return '';
     }).join('');
     return resultTemplate;
   };
