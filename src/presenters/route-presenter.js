@@ -84,7 +84,7 @@ export default class RoutePresenter {
   createPoint = (callback) => {
     this.#currentSortType = SortType.DAY;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#pointNewPresenter.init(callback);
+    this.#pointNewPresenter.init(callback, this.#offersModel.offers, this.#destinationsModel.destinations);
   };
 
   //Метод-обработчик для "сворачивания" всех форм
