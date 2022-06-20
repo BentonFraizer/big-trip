@@ -173,7 +173,7 @@ export default class EditEventFormView extends AbstractStatefulView {
   };
 
   //Метод для обработки смены точки маршрута с обновлением количества офферов для каждого типа
-  #changeCurrentType = (evt) => {
+  #changeCurrentTypeHandler = (evt) => {
     evt.preventDefault();
     if (evt.target.className.includes('event__type-label')) {
       if (evt.target.innerHTML !== this._state.point.type) {
@@ -191,7 +191,7 @@ export default class EditEventFormView extends AbstractStatefulView {
   };
 
   //Метод для обработки выбора дополнительных опций
-  #pickOffers = (evt) => {
+  #pickOffersHandler = (evt) => {
     if (evt.target.id.includes('event-offer')) {
       const offerId = Number(evt.target.id.replace('event-offer-', ''));
       let pickedOffers = this._state.point.offers;
@@ -242,11 +242,11 @@ export default class EditEventFormView extends AbstractStatefulView {
   };
 
   #setInnerHandlers = () => {
-    this.element.querySelector('.event__type-group').addEventListener('click', this.#changeCurrentType);
+    this.element.querySelector('.event__type-group').addEventListener('click', this.#changeCurrentTypeHandler);
 
     const offersElement = this.element.querySelector('.event__available-offers');
     if (offersElement) {
-      offersElement.addEventListener('click', this.#pickOffers);
+      offersElement.addEventListener('click', this.#pickOffersHandler);
     }
     this.element.querySelector('#event-price-1').addEventListener('input', this.#changeBasePriceInputHandler);
     this.element.querySelector('#event-destination-1').addEventListener('change', this.#changeCityDestinationHandler);
@@ -256,6 +256,16 @@ export default class EditEventFormView extends AbstractStatefulView {
   #pointDeleteClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.deleteClick(EditEventFormView.parseStateToData(this._state.point, this._state.offers, this._state.destinations));
+  };
+
+  setCloseEditFormClickHandler (callback){
+    this._callback.closeEditFormClick = callback;
+    this.element.querySelector('form .event__rollup-btn').addEventListener('click', this.#closeEditFormClickHandler);
+  }
+
+  #closeEditFormClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.closeEditFormClick();
   };
 
   static parseDataToState = (pointData, offersData, destinationsData) => ({
@@ -280,15 +290,5 @@ export default class EditEventFormView extends AbstractStatefulView {
     delete point.isDeleting;
 
     return {point, offers, destinations};
-  };
-
-  setCloseEditFormClickHandler (callback){
-    this._callback.closeEditFormClick = callback;
-    this.element.querySelector('form .event__rollup-btn').addEventListener('click', this.#closeEditFormClickHandler);
-  }
-
-  #closeEditFormClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.closeEditFormClick();
   };
 }
