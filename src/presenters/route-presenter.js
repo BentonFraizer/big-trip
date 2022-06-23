@@ -76,6 +76,21 @@ export default class RoutePresenter {
     return filteredPoints;
   }
 
+  //Метод для получения отфильтрованных точек маршрута ТОЛЬКО ПО ДАТЕ
+  //Необходимо для того, чтобы элементы в массиве не перемешивались при передаче их в tripInfoElement
+  get filteredPoints() {
+    this.#filterType = this.#filterModel.filter;
+    const points = this.#pointsModel.points;
+    const filteredPoints = filter[this.#filterType](points);
+
+    switch (SortType.DAY) {
+      case SortType.DAY:
+        return filteredPoints.sort(sortDateDown);
+    }
+
+    return filteredPoints;
+  }
+
   //Метод (геттер) для получения данных о дополнительных предложениях из модели OffersModel
   get offers() {
     return this.#offersModel.offers;
@@ -183,7 +198,7 @@ export default class RoutePresenter {
 
   //Метод отрисовки компонента дополнительной информацией в header
   #renderTripInfo () {
-    this.#tripInfoElement = new TripInfoView(this.points);
+    this.#tripInfoElement = new TripInfoView(this.filteredPoints, this.offers);
     render(this.#tripInfoElement, this.#tripMainElement, RenderPosition.AFTERBEGIN);
   }
 
@@ -240,6 +255,7 @@ export default class RoutePresenter {
       remove(this.#tripInfoElement);
     }
     this.#renderTripInfo();
+
     render(this.#mainContainer, this.#pageBodyContainer);
     render(this.#mainInnerContainer, this.#mainContainer.element);
     render(this.#sortAndEventsContainer, this.#mainInnerContainer.element);

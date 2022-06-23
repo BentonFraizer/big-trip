@@ -11,7 +11,7 @@ import OffersApiService from './services/api/offers-api-service';
 import DestinationsApiService from './services/api/destinations-api-service';
 import HeaderView from './views/header/header-view';
 
-const AUTHORIZATION = 'Basic ljsu4yhgj4i4u4u2';
+const AUTHORIZATION = 'Basic ljsu4yhgj4i4u4a4';
 const END_POINT = 'https://17.ecmascript.pages.academy/big-trip';
 
 const pageBodyContainerElement = document.querySelector('.page-body');
