@@ -3,12 +3,15 @@ import EventsListView from '../views/events_list/events-list-view';
 import SortFormView from '../views/sort_form/sort-form-view';
 import SortAndEventsContainerView from '../views/sort_and_events_container/sort-and-events-container-view';
 import EventsListEmptyView from '../views/events_list_empty/events-list-empty-view';
-import {remove, render} from '../framework/render';
+import {remove, render, RenderPosition} from '../framework/render';
 import PointPresenter from './point-presenter';
 import PointNewPresenter from './point-new-presenter';
 import {filter} from '../utils/filter';
 import {SortType, UserAction, UpdateType, FilterType} from '../consts';
 import {sortPriceDown, sortTimeDown, sortDateDown} from '../utils/utils';
+import MainView from '../views/main/main-view';
+import MainInnerContainerView from '../views/main_inner_container/main-inner-container-view';
+import TripInfoView from '../views/trip_info/trip-info-view';
 
 const TimeLimit = {
   LOWER_LIMIT: 200,
@@ -22,12 +25,16 @@ export default class RoutePresenter {
   #destinationsModel = null;
   #filterModel = null;
   #LOADING = 'loading';
+  #tripMainElement = null;
+  #tripInfoElement = null;
 
   #sortAndEventsContainer = new SortAndEventsContainerView(); // section class="trip-events"
   #eventsListContainer = new EventsListView();                // ul      class="trip-events__list"
   #sortComponent = null;                                      // form    class="trip-events__trip-sort  trip-sort"
   #noPoinstComponent = null;                                  // p       class="trip-events__msg">
   #loadingComponent = new EventsListEmptyView(this.#LOADING);
+  #mainContainer = new MainView();
+  #mainInnerContainer = new MainInnerContainerView();
 
   #pointPresenters = new Map();
   #pointNewPresenter = null;
@@ -42,6 +49,7 @@ export default class RoutePresenter {
     this.#offersModel = offersModel;
     this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
+    this.#tripMainElement = document.querySelector('.trip-main');
 
     this.#pointNewPresenter = new PointNewPresenter (this.#eventsListContainer.element, this.#handleViewAction, this.#offersModel.offers, this.#destinationsModel.destinations);
 
@@ -74,11 +82,11 @@ export default class RoutePresenter {
   }
 
   get destinations() {
-    return  this.#destinationsModel.destinations;
+    return this.#destinationsModel.destinations;
   }
 
   init () {
-    this.#renderSortAndEventsBoard();
+    this.#renderBoard();
   }
 
   createPoint = (callback) => {
@@ -140,19 +148,19 @@ export default class RoutePresenter {
         break;
       case UpdateType.MINOR:
         // - обновить список (например, при удалении точки маршрута)
-        this.#clearSortAndEventsBoard();
-        this.#renderSortAndEventsBoard();
+        this.#clearBoard();
+        this.#renderBoard();
         break;
       case UpdateType.MAJOR:
         // - обновить всю доску (например, при переключении фильтра)
-        this.#clearSortAndEventsBoard({resetSortType: true});
-        this.#renderSortAndEventsBoard();
+        this.#clearBoard({resetSortType: true});
+        this.#renderBoard();
         break;
       case UpdateType.INIT:
         // - показать информационное сообщение в процессе ожидания загрузки данных с сервера
         this.#isLoading = false;
         remove(this.#loadingComponent);
-        this.#renderSortAndEventsBoard();
+        this.#renderBoard();
         break;
       default:
         throw new Error ('The transferred update type does not exist');
@@ -168,10 +176,16 @@ export default class RoutePresenter {
     // - Сортируем задачи
     this.#currentSortType = sortType;
     // - Очищаем список
-    this.#clearSortAndEventsBoard();
+    this.#clearBoard();
     // - Рендерим список заново
-    this.#renderSortAndEventsBoard();
+    this.#renderBoard();
   };
+
+  //Метод отрисовки компонента дополнительной информацией в header
+  #renderTripInfo () {
+    this.#tripInfoElement = new TripInfoView(this.points);
+    render(this.#tripInfoElement, this.#tripMainElement, RenderPosition.AFTERBEGIN);
+  }
 
   //Метод отрисовки компонента сортировки
   #renderSort () {
@@ -202,8 +216,8 @@ export default class RoutePresenter {
     render(this.#noPoinstComponent, this.#sortAndEventsContainer.element);
   }
 
-  //Метод для очистки представления (доски) с компонентами сортировки, точек маршрута, информационных сообщений
-  #clearSortAndEventsBoard = ({resetSortType = false} = {}) => {
+  //Метод для очистки представления (доски), т.е. всей страницы
+  #clearBoard = ({resetSortType = false} = {}) => {
     this.#pointNewPresenter.destroy();
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
@@ -220,9 +234,15 @@ export default class RoutePresenter {
     }
   };
 
-  //Метод отрисовки представления (доски) с компонентами сортировки, точек маршрута, информационных сообщений
-  #renderSortAndEventsBoard () {
-    render(this.#sortAndEventsContainer, this.#pageBodyContainer);
+  //Метод отрисовки представления (доски), т.е. всей страницы
+  #renderBoard () {
+    if (this.#tripInfoElement) {
+      remove(this.#tripInfoElement);
+    }
+    this.#renderTripInfo();
+    render(this.#mainContainer, this.#pageBodyContainer);
+    render(this.#mainInnerContainer, this.#mainContainer.element);
+    render(this.#sortAndEventsContainer, this.#mainInnerContainer.element);
     if (this.#isLoading) {
       this.#renderLoading();
       return;
