@@ -1,7 +1,6 @@
 # Проект «Большое путешествие»
 
 * Студент: [Юрий Лопухин](https://up.htmlacademy.ru/ecmascript/17/user/704309).
-* Наставник: [Евгений Фаллер](https://htmlacademy.ru/profile/id505933).
 
 ---
 
