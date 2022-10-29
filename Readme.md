@@ -6,11 +6,11 @@
 
 The app allows to:
 
-- create, edit and delete events;
-- mark tasks as favorite;
-- sort events by Day, Time and Price;
-- filter events (Everything, Future, Past)
-- see total cost of the hole trip
+- **create**, **edit** and **delete** events;
+- **mark** tasks as favorite;
+- **sort** events by Day, Time and Price;
+- **filter** events (Everything, Future, Past)
+- **see total cost** of the hole trip
 
 ---
 <a href="https://bentonfraizer.github.io/big-trip/" target="_blank">Check the Demo</a>
