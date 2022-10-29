@@ -10,7 +10,7 @@ The app allows to:
 - **mark** tasks as favorite;
 - **sort** events by Day, Time and Price;
 - **filter** events (Everything, Future, Past)
-- **see total cost** of the hole trip
+- **see total cost** of the whole trip
 
 ---
 <a href="https://bentonfraizer.github.io/big-trip/" target="_blank">Check the Demo</a>
