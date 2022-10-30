@@ -1,4 +1,4 @@
-# Big-trip
+# Big trip
 
 ### About project
 
@@ -13,7 +13,7 @@ The app allows to:
 - **see total cost** of the whole trip
 
 ---
-<a href="https://bentonfraizer.github.io/big-trip/" target="_blank">Check the Demo</a>
+[Check the Demo](https://external.ink?to=/bentonfraizer.github.io/big-trip/)
 
 <img src="https://github.com/BentonFraizer/big-trip/blob/master/.github/workflows/big-trip.png" width="769" />
 
