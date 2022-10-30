@@ -25,12 +25,19 @@ The app allows to:
 
 ### ⚙️ How To Run Locally
 
-1. clone repo
-2. install all dependencies with:
+1. clone repo with:
+```
+git clone git@github.com:BentonFraizer/big-trip.git
+```
+2. go into the project folder with:
+```
+cd big-trip/
+```
+3. install all dependencies with:
 ```
 npm install
 ```
-3. run in the **dev** mode with:
+4. run in the **dev** mode with:
 ```
 npm start
 ```
